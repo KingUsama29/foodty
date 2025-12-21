@@ -7,6 +7,6 @@
     <title>register</title>
 </head>
 <body>
-    
+    <div class="header"></div>
 </body>
 </html>
