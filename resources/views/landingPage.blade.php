@@ -1,4 +1,4 @@
-@include('kelompok.headerPublik')
+@include('partials.headerPublik')
 
 <!-- ================= HERO ================= -->
 <section
@@ -94,5 +94,5 @@
     </div>
 </section>
 
-@include('kelompok.footerPublik')
-@include('kelompok.tentangKami')
+@include('partials.footerPublik')
+@include('partials.tentangKami')
