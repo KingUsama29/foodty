@@ -67,8 +67,13 @@
             </form>
 
             <p class="register-text text-center">
+                 Lupa Password ?
+                <a href="{{ route('lupa_password') }}">klik disini</a>
+            </p>
+
+            <p class="register-text text-center">
                 Belum punya akun?
-                <a href="{{ route('register') }}">daftar disini ya</a>
+                <a href="{{ route('register') }}">daftar disini</a>
             </p>
 
         </div>
