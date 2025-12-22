@@ -19,13 +19,10 @@
 </head>
 <body>
 
-<!-- FULL PAGE WRAPPER -->
 <div class="login-page d-flex align-items-center justify-content-center">
 
-    <!-- PANEL UTAMA -->
     <div class="login-panel w-100 text-center">
 
-        <!-- HEADER (LOGO + TITLE) -->
         <div class="login-header mb-3">
             <img
                 src="{{ asset('img/logofoodty.png') }}"
@@ -36,7 +33,6 @@
             <h2 class="app-title mb-0">FoodTY</h2>
         </div>
 
-        <!-- CARD LOGIN -->
         <div class="login-card mx-auto">
 
             <form method="POST" action="#">
