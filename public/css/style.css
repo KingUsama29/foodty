@@ -1,0 +1,6 @@
+.hero-section {
+    background-image: url('/gambar/orang_memberi_makanan.png');
+    background-size: cover;
+    background-position: 50% 70%;
+    height: 600px;
+}

@@ -3,8 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-// Auth Routes
+Route::get('/', function () {
+    return view('landingPage');
+});
 
+// Auth Routes
 Route::get('/login', function () {
     return view('auth.login');
 });
