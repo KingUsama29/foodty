@@ -1,0 +1,128 @@
+/* =========================
+   GLOBAL
+========================= */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* =========================
+   PAGE BACKGROUND
+========================= */
+.login-page {
+    min-height: 100vh;
+    background-color: #cfe4da;
+    padding: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================
+   MAIN PANEL
+========================= */
+.login-panel {
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+
+/* =========================
+   HEADER (LOGO + TITLE)
+========================= */
+.login-header {
+    margin-bottom: 16px;
+}
+
+.login-logo {
+    width: 220px;
+    height: 220px;
+
+    object-fit: cover;
+    display: block;
+    margin: 0 auto 8px;
+
+    /* supaya tidak “terasa berat” */
+    transform: scale(0.9);
+}
+
+/* DESKTOP ADJUSTMENT */
+@media (min-width: 768px) {
+    .login-panel {
+        max-width: 520px;
+    }
+
+    .login-logo {
+        transform: scale(1);
+    }
+}
+
+/* MOBILE SAFETY (WAJIB) */
+@media (max-width: 576px) {
+    .login-logo {
+        width: 320px;
+        height: 320px;
+        transform: scale(1);
+    }
+}
+
+/* =========================
+   TITLE
+========================= */
+.app-title {
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* =========================
+   CARD
+========================= */
+.login-card {
+    background-color: #6fb6d6;
+    border-radius: 30px;
+    padding: 32px 24px 40px;
+}
+
+/* =========================
+   INPUT
+========================= */
+.login-input {
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 14px;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.login-btn {
+    background-color: #EABF73;
+    border: none;
+    border-radius: 14px;
+    padding: 12px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.login-btn:hover {
+    background-color: #1f4fd8;
+}
+
+/* =========================
+   REGISTER TEXT
+========================= */
+.register-text {
+    font-size: 13px;
+    margin-top: 22px;
+}
+
+.register-text a {
+    text-decoration: none;
+    font-weight: 600;
+    color: #000;
+}
