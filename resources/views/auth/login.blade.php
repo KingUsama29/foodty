@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Login | FoodTY</title>
@@ -12,74 +13,78 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <!-- Vite -->
-    @vite([
-        'resources/css/auth.css',
-        'resources/js/app.js'
-    ])
+    @vite(['resources/css/auth.css', 'resources/js/app.js'])
 </head>
+
 <body>
-
-<!-- FULL PAGE WRAPPER -->
-<div class="login-page d-flex align-items-center justify-content-center">
-
-    <!-- PANEL UTAMA -->
-    <div class="login-panel w-100 text-center">
-
-        <!-- HEADER (LOGO + TITLE) -->
-        <div class="login-header mb-3">
-            <img
-                src="{{ asset('img/logofoodty.png') }}"
-                alt="FoodTY"
-                class="login-logo"
-            >
-
-            <h2 class="app-title mb-0">FoodTY</h2>
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
         </div>
+    @endif
 
-        <!-- CARD LOGIN -->
-        <div class="login-card mx-auto">
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    <!-- FULL PAGE WRAPPER -->
+    <div class="login-page d-flex align-items-center justify-content-center">
 
-            <form method="POST" action="#">
-                @csrf
+        <!-- PANEL UTAMA -->
+        <div class="login-panel w-100 text-center">
 
-                <div class="mb-3">
-                    <input
-                        type="text"
-                        class="form-control login-input"
-                        placeholder="Masukkan nama pengguna"
-                        required
-                        autofocus
-                    >
-                </div>
+            <!-- HEADER (LOGO + TITLE) -->
+            <div class="login-header mb-3">
+                <img src="{{ asset('img/logofoodty.png') }}" alt="FoodTY" class="login-logo">
 
-                <div class="mb-4">
-                    <input
-                        type="password"
-                        class="form-control login-input"
-                        placeholder="Masukkan password"
-                        required
-                    >
-                </div>
+                <h2 class="app-title mb-0">FoodTY</h2>
+            </div>
 
-                <button type="submit" class="btn login-btn w-100">
-                    Masuk
-                </button>
-            </form>
+            <!-- CARD LOGIN -->
+            <div class="login-card mx-auto">
 
-            <p class="register-text text-center">
-                 Lupa Password ?
-                <a href="{{ route('lupa_password') }}">klik disini</a>
-            </p>
+                <form method="POST" action="{{ route('login.logic') }}">
+                    @csrf
 
-            <p class="register-text text-center">
-                Belum punya akun?
-                <a href="{{ route('register') }}">daftar disini</a>
-            </p>
+                    <div class="mb-3">
+                        <input name="nik" type="text" class="form-control login-input"
+                            placeholder="Masukkan Nomor NIK" required autofocus>
+                    </div>
+                    <div class="mb-3">
+                        <input name="email" type="text" class="form-control login-input"
+                            placeholder="Masukkan Email" required autofocus>
+                    </div>
+
+                    <div class="mb-4">
+                        <input name="password" type="password" class="form-control login-input"
+                            placeholder="Masukkan password" required>
+                    </div>
+
+                    <button type="submit" class="btn login-btn w-100">
+                        Masuk
+                    </button>
+                </form>
+
+                <p class="register-text text-center">
+                    Lupa Password ?
+                    <a href="{{ route('lupa_password') }}">klik disini</a>
+                </p>
+
+                <p class="register-text text-center">
+                    Belum punya akun?
+                    <a href="{{ route('register') }}">daftar disini</a>
+                </p>
+
+            </div>
 
         </div>
-
     </div>
-</div>
 
 </body>
+
 </html>

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -14,7 +17,6 @@ class AuthController extends Controller
             'nik' => 'required|string|unique:users,nik|max:20',
             'email' => 'required|string|email|unique:users,email|max:255',
             'no_telp' => 'required|string|unique:users,no_telp|max:15',
-            'alamat' => 'required|string',
             'password' => 'required|string|min:8|confirmed',
         ]);
         
@@ -23,19 +25,55 @@ class AuthController extends Controller
             'nik' => $validate['nik'],
             'email' => $validate['email'],
             'no_telp' => $validate['no_telp'],
-            'alamat' => $validate['alamat'],
             'role' => 'user',
             'password' => bcrypt($validate['password']),
         ]);
 
-        return response()->json(['message'=>'Registrasi Berhasil Dilakukan!', 'user' => $user]);
+        if($request->expectsJson() || $request->is('api/*')){
+            return response()->json(['message' => 'Registrasi Berhasil', 'user' => $user], 201);
+        }
+        return redirect('/login')->with('success','Registerasi Berhasil Dilakukan, Silahkan Login!');
     }
+
     public function login(Request $request)
     {
-        // Login logic here
+        $validate = $request->validate([
+            'nik' => 'required|string|max:20',
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:8',
+        ]);
+
+        $login = Auth::attempt([
+            'nik' => $request->nik,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+
+        if(!$login){
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Login gagal'], 422);            
+            }
+
+            return back()->withErrors(['login' => 'NIK/Email atau Password Salah'])->withInput();
+        }
+        if($request->expectsJson() || $request->is('api/*')){
+            return response()->json(['message' => 'Login Berhasil!'], 200);
+        }
+
+        return redirect('/login')->with('success', 'Login berhasil');
     }
+
     public function logout(Request $request)
     {
-        // Logout logic here
+       if(!Auth::check()){
+            return redirect('/login')->withErrors('Anda harus login terlebih dahulu.');
+       }
+
+       Auth::logout();
+
+       $request->session()->invalidate();
+       $request->session()->regenerateToken();
+
+       return redirect('/login')->with('status', 'Anda telah logout.');
     }
 }
