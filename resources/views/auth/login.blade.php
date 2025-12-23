@@ -32,7 +32,6 @@
             </ul>
         </div>
     @endif
-    <!-- FULL PAGE WRAPPER -->
     <div class="login-page d-flex align-items-center justify-content-center">
 
         <!-- PANEL UTAMA -->
