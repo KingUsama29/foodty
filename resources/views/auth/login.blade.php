@@ -45,7 +45,6 @@
                 <h2 class="app-title mb-0">FoodTY</h2>
             </div>
 
-            <!-- CARD LOGIN -->
             <div class="login-card mx-auto">
 
                 <form method="POST" action="{{ route('login.logic') }}">
