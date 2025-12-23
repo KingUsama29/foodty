@@ -12,56 +12,55 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        try{
-            $validate = $request->validate([
-                'name' => 'required|string|max:255',
-                'nik' => 'required|string|unique:users,nik|max:20',
-                'email' => 'required|string|email|unique:users,email|max:255',
-                'no_telp' => 'required|string|unique:users,no_telp|max:15',
-                'alamat' => 'required|string',
-                'password' => 'required|string|min:8|confirmed',
-            ]);
-            
-            $user = User::create([
-                'name' => $validate['name'],
-                'nik' => $validate['nik'],
-                'email' => $validate['email'],
-                'no_telp' => $validate['no_telp'],
-                'alamat' => $validate['alamat'],
-                'role' => 'user',
-                'password' => bcrypt($validate['password']),
-            ]);
+        $validate = $request->validate([
+            'name' => 'required|string|max:255',
+            'nik' => 'required|string|unique:users,nik|max:20',
+            'email' => 'required|string|email|unique:users,email|max:255',
+            'no_telp' => 'required|string|unique:users,no_telp|max:15',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+        
+        $user = User::create([
+            'name' => $validate['name'],
+            'nik' => $validate['nik'],
+            'email' => $validate['email'],
+            'no_telp' => $validate['no_telp'],
+            'role' => 'user',
+            'password' => bcrypt($validate['password']),
+        ]);
 
-            return response()->json(['message'=>'Registrasi Berhasil Dilakukan!', 'user' => $user]);
-        }catch(\Illuminate\Validation\ValidationException $e){
-            return response()->json(['errors' => $e->errors()], 422);
+        if($request->expectsJson() || $request->is('api/*')){
+            return response()->json(['message' => 'Registrasi Berhasil', 'user' => $user], 201);
         }
+        return redirect('/login')->with('success','Registerasi Berhasil Dilakukan, Silahkan Login!');
     }
 
     public function login(Request $request)
     {
-        try{
-            $validate = $request->validate([
-                'nik' => 'required|string|max:20',
-                'email' => 'required|string|email|max:255',
-                'password' => 'required|string|min:8',
-            ]);
+        $validate = $request->validate([
+            'nik' => 'required|string|max:20',
+            'email' => 'required|string|email|max:255',
+            'password' => 'required|string|min:8',
+        ]);
 
-            $user = User::where('nik', $validate['nik'])->first();
+        $login = Auth::attempt([
+            'nik' => $request->nik,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
 
-            if(!$user || !Hash::check($validate['password'], $user->password)) {
-                throw ValidationException::withMessages([
-                    'nik' => ['Nik Tidak ditemukan atau Password Salah.']
-                ]);
+        if(!$login){
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => 'Login gagal'], 422);            
             }
 
-            return response()->json([
-                'messages','Login Berhasil',
-                'user' => $user
-            ]);    
-        }catch(\Illuminate\Validation\ValidationException $e){
-            return response()->json(['errors' => $e->errors()], 422);
+            return back()->withErrors(['login' => 'NIK/Email atau Password Salah'])->withInput();
         }
+        if($request->expectsJson() || $request->is('api/*')){
+            return response()->json(['message' => 'Login Berhasil!'], 200);
+        }
+
+        return redirect('/login')->with('success', 'Login berhasil');
     }
 
     public function logout(Request $request)

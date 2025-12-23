@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Register | FoodTY</title>
@@ -14,95 +15,91 @@
     <!-- Vite -->
     @vite(['resources/css/auth.css'])
 </head>
+
 <body>
 
-<div class="login-page d-flex align-items-center justify-content-center">
-    <div class="login-panel w-100 text-center">
-
-        <!-- HEADER -->
-        <div class="login-header mb-3">
-            <img
-                src="{{ asset('img/logofoodty.png') }}"
-                alt="FoodTY"
-                class="login-logo"
-            >
-            <h2 class="app-title mb-0">FoodTY</h2>
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
         </div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    <div class="login-page d-flex align-items-center justify-content-center">
+        <div class="login-panel w-100 text-center">
 
-        <!-- CARD -->
-        <div class="login-card mx-auto">
+            <!-- HEADER -->
+            <div class="login-header mb-3">
+                <img src="{{ asset('img/logofoodty.png') }}" alt="FoodTY" class="login-logo">
+                <h2 class="app-title mb-0">FoodTY</h2>
+            </div>
 
-            <p class="mb-4" style="font-size:14px;">
-                Lengkapi data berikut untuk membuat akun baru.
-            </p>
+            <!-- CARD -->
+            <div class="login-card mx-auto">
 
-            <!-- 🔴 BACKEND NANTI -->
-            <form method="GET" action="#">
+                <p class="mb-4" style="font-size:14px;">
+                    Lengkapi data berikut untuk membuat akun baru.
+                </p>
 
-                <!-- Nama Pengguna -->
-                <div class="mb-3">
-                    <input
-                        type="text"
-                        class="form-control login-input"
-                        placeholder="Nama Pengguna"
-                        required
-                    >
-                </div>
+                <form method="POST" action="{{ route('register.logic') }}">
+                    @csrf
+                    <!-- Nama Pengguna -->
+                    <div class="mb-3">
+                        <input name="name" type="text" class="form-control login-input"
+                            placeholder="Nama Pengguna" required>
+                    </div>
 
-                <!-- Email -->
-                <div class="mb-3">
-                    <input
-                        type="email"
-                        class="form-control login-input"
-                        placeholder="Email"
-                        required
-                    >
-                </div>
+                    <!-- NIK -->
+                    <div class="mb-3">
+                        <input name="nik" type="text" class="form-control login-input" placeholder="NIK"
+                            maxlength="16" required>
+                    </div>
 
-                <!-- NIK -->
-                <div class="mb-3">
-                    <input
-                        type="text"
-                        class="form-control login-input"
-                        placeholder="NIK"
-                        maxlength="16"
-                        required
-                    >
-                </div>
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <input name="email" type="email" class="form-control login-input" placeholder="Email"
+                            required>
+                    </div>
 
-                <!-- Password -->
-                <div class="mb-3">
-                    <input
-                        type="password"
-                        class="form-control login-input"
-                        placeholder="Password"
-                        required
-                    >
-                </div>
+                    {{-- Telepon --}}
+                    <div class="mb-3">
+                        <input name="no_telp" type="tel" class="form-control login-input"
+                            placeholder="Nomor Telepon Aktif" required>
+                    </div>
 
-                <!-- Konfirmasi Password -->
-                <div class="mb-4">
-                    <input
-                        type="password"
-                        class="form-control login-input"
-                        placeholder="Konfirmasi Password"
-                        required
-                    >
-                </div>
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <input name="password" type="password" class="form-control login-input" placeholder="Password"
+                            required>
+                    </div>
 
-                <button type="submit" class="btn login-btn w-100">
-                    Daftar
-                </button>
-            </form>
+                    <!-- Konfirmasi Password -->
+                    <div class="mb-4">
+                        <input name="password_confirmation" type="password" class="form-control login-input"
+                            placeholder="Konfirmasi Password" required>
+                    </div>
 
-            <p class="register-text text-center">
-                Sudah punya akun?
-                <a href="/login">Login di sini</a>
-            </p>
+                    <button type="submit" class="btn login-btn w-100">
+                        Daftar
+                    </button>
+                </form>
 
+                <p class="register-text text-center">
+                    Sudah punya akun?
+                    <a href="/login">Login di sini</a>
+                </p>
+
+            </div>
         </div>
     </div>
-</div>
 
 </body>
+
 </html>
