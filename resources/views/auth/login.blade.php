@@ -12,7 +12,7 @@
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-    <!-- Vite -->
+    <!-- Vitee -->
     @vite(['resources/css/auth.css', 'resources/js/app.js'])
 </head>
 
