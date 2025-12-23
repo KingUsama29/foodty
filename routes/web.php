@@ -23,3 +23,12 @@ Route::get('/lupa_password', function () {
 })->name('lupa_password');
 
 
+//penerima
+
+Route::get('/dashboard_penerima', function () {
+    return view('penerima.dashboard_penerima');
+});
+
+Route::get('/penerima/riwayat_penerima', function () {
+    return view('penerima.riwayat_penerima');
+});
