@@ -1,6 +1,90 @@
-.hero-section {
-    background-image: url('/gambar/orang_memberi_makanan.png');
-    background-size: cover;
-    background-position: 50% 70%;
-    height: 600px;
+/* ===============================
+   FOODTY COLOR SYSTEM (FINAL)
+   =============================== */
+
+:root {
+    --foodty-primary: #6DB9D4;
+}
+
+/* TEXT */
+.text-primary {
+    color: var(--foodty-primary) !important;
+}
+
+/* ===============================
+   FOODTY ICON SYSTEM (FINAL)
+   =============================== */
+
+/* Ikon profil (desktop & mobile) */
+.profile-icon {
+    color: #6DB9D4 !important;
+}
+
+/* Ikon menu & kartu */
+.sidebar .fa-solid,
+.card .fa-solid {
+    color: #6DB9D4;
+}
+
+
+
+/* BUTTON PRIMARY */
+.btn-primary {
+    background-color: var(--foodty-primary) !important;
+    border-color: var(--foodty-primary) !important;
+}
+
+.btn-primary:hover {
+    background-color: #5aaec8 !important;
+    border-color: #5aaec8 !important;
+}
+
+/* BUTTON OUTLINE PRIMARY */
+.btn-outline-primary {
+    color: var(--foodty-primary) !important;
+    border-color: var(--foodty-primary) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--foodty-primary) !important;
+    color: #fff !important;
+}
+
+/* SIDEBAR ACTIVE */
+.list-group-item.active {
+    background-color: var(--foodty-primary) !important;
+    border-color: var(--foodty-primary) !important;
+    color: #fff !important;
+}
+
+/* LINK */
+a {
+    color: var(--foodty-primary);
+}
+
+a:hover {
+    color: #5aaec8;
+}
+
+/* IKON PROFIL SIDEBAR */
+.profile-icon {
+    color: #6DB9D4 !important;
+}
+
+:root {
+    --foodty-blue: #6DB9D4;
+}
+
+.text-primary {
+    color: var(--foodty-blue) !important;
+}
+
+.btn-primary {
+    background-color: var(--foodty-blue);
+    border-color: var(--foodty-blue);
+}
+
+.sidebar .fa-solid,
+.card .fa-solid {
+    color: var(--foodty-blue);
 }

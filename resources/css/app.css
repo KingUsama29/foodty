@@ -10,3 +10,36 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 
 }
+
+:root {
+    --foodty-primary: #6DB9D4;
+}
+
+/* Sidebar active menu */
+.list-group-item.active {
+    background-color: var(--foodty-primary);
+    border-color: var(--foodty-primary);
+}
+
+/* Icon accent */
+.text-primary {
+    color: var(--foodty-primary) !important;
+}
+
+/* Button primary (kalau ada) */
+.text-primary {
+    color: #6DB9D4 !important;
+}
+
+.btn-primary {
+    background-color: #6DB9D4;
+    border-color: #6DB9D4;
+}
+
+
+.text-primary {
+    color: #6DB9D4 !important;
+}
+
+
+
