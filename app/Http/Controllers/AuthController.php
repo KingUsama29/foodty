@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    public function index(){
+
+    }
     public function register(Request $request)
     {
         $validate = $request->validate([
@@ -60,7 +63,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Login Berhasil!'], 200);
         }
 
-        return redirect('/login')->with('success', 'Login berhasil');
+        return redirect('/dashboard')->with('success', 'Login berhasil');
     }
 
     public function logout(Request $request)
@@ -74,6 +77,6 @@ class AuthController extends Controller
        $request->session()->invalidate();
        $request->session()->regenerateToken();
 
-       return redirect('/login')->with('status', 'Anda telah logout.');
+       return redirect('/login')->with('success', 'Anda telah logout.');
     }
 }

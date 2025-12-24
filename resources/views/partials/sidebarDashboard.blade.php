@@ -15,10 +15,13 @@
 
     {{-- LOGOUT --}}
     <div class="p-3 border-top">
-        <button class="btn btn-outline-danger w-100">
-            <i class="fa-solid fa-right-from-bracket me-2"></i>
-            Logout
-        </button>
+        <form action="{{ route('logout') }}" method="post">
+            @csrf
+            <button type="submit" class="btn btn-outline-danger w-100">
+                <i class="fa-solid fa-right-from-bracket me-2"></i>
+                Logout
+            </button>
+        </form>
     </div>
 
 </aside>
