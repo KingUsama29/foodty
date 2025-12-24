@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('full_name');
-            $table->string('kk_number')->unique();
+            $table->string('kk_number');
             $table->text('alamat');
             $table->string('province');
             $table->string('city');
@@ -25,9 +25,6 @@ return new class extends Migration
             $table->timestamp('verified_at')->nullable();
             $table->text('rejected_reason')->nullable();
             $table->timestamps();
-
-            $table->unique('user_id');
-
         });
     }
 

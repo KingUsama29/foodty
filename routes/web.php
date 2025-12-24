@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RecipientVerificationController;
 
 Route::get('/', function () {
     return view('landingPage');
@@ -23,3 +24,4 @@ Route::get('/lupa_password', function () {
 })->name('lupa_password');
 
 
+Route::post('/verifikasi', [RecipientVerificationController::class], 'store')->middleware('auth')->name('verifikasi.store');
