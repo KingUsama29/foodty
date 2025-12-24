@@ -52,6 +52,7 @@
             </div>
         </div>
 
+        
         {{-- RIWAYAT --}}
         <div class="col-12 col-md-6">
             <div class="card h-100 shadow-sm">
@@ -61,9 +62,10 @@
                     <p class="small text-muted">
                         Lihat riwayat pengajuan dan status bantuan yang pernah diajukan.
                     </p>
-                    <button class="btn btn-outline-primary mt-2">
-                        Lihat Riwayat
-                    </button>
+                        <a href="{{ route('penerima.riwayat') }}"
+                            class="btn btn-outline-primary mt-2">
+                            Lihat Riwayat
+                        </a>
                 </div>
             </div>
         </div>
