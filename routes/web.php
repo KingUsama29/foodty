@@ -2,7 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RecipientVerificationController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PetugasController;
+use App\Http\Controllers\PenerimaController;
 
 Route::get('/', function () {
     return view('landingPage');
@@ -24,4 +28,19 @@ Route::get('/lupa_password', function () {
 })->name('lupa_password');
 
 
+Route::middleware('auth')->group(function(){
+    Route::get('/dashboard',[DashboardController::class,'index'])->name('dashboard');
+
+    Route::prefix('admin')->middleware('role:admin')->group(function(){
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    });
+    Route::prefix('petugas')->middleware('role:petugas')->group(function(){
+        Route::get('/dashboard', [PetugasController::class, 'index'])->name('petugas.dashboard');
+    });
+    Route::prefix('penerima')->middleware('role:user')->group(function(){
+        Route::get('/dashboard', [PenerimaController::class, 'index'])->name('penerima.dashboard');
+    });
+
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+}); 
 Route::post('/verifikasi', [RecipientVerificationController::class], 'store')->middleware('auth')->name('verifikasi.store');

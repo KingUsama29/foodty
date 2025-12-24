@@ -56,7 +56,7 @@ class RecipientVerificationController extends Controller
 
         try{
             $verification = RecipientVerification::create([
-                'user_id'       => $request->user()->id,
+                'user_id'       =>  $request->user()->id,
                 'full_name'     =>  $validated['full_name'],
                 'kk_number'     =>  $validated['kk_number'],
                 'alamat'        =>  $validated['alamat'],
