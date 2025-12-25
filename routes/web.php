@@ -44,3 +44,15 @@ Route::middleware('auth')->group(function(){
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 }); 
 Route::post('/verifikasi', [RecipientVerificationController::class], 'store')->middleware('auth')->name('verifikasi.store');
+
+// ================= FORM PENGAJUAN (PUNYAMU) =================
+
+// tampilkan halaman form
+Route::get('/pilihform', function () {
+    return view('penerima2.form.pilihform');
+});
+
+// submit form
+Route::post('/pengajuan', function () {
+    return back();
+});
