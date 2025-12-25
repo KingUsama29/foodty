@@ -6,8 +6,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RecipientVerificationController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PetugasController;
+use App\Http\Controllers\Admin\PetugasController as AdminPetugasController; 
 use App\Http\Controllers\PenerimaController;
-
 Route::get('/', function () {
     return view('landingPage');
 });
@@ -33,6 +33,8 @@ Route::middleware('auth')->group(function(){
 
     Route::prefix('admin')->middleware('role:admin')->group(function(){
         Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+        Route::resource('petugas', AdminPetugasController::class);
+        Route::patch('petugas/{id}/toggle-status', [AdminPetugasController::class, 'toggleStatus'])->name('admin.petugas.toggle-status');
     });
     Route::prefix('petugas')->middleware('role:petugas')->group(function(){
         Route::get('/dashboard', [PetugasController::class, 'index'])->name('petugas.dashboard');
