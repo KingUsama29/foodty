@@ -47,6 +47,17 @@ Route::middleware('auth')->group(function(){
         })->name('penerima.riwayat');
     //tambahan
 
+
+    // tampilkan halaman form
+Route::get('/pilihform', function () {
+    return view('penerima.pilihform');
+})->name('form.pilih');
+
+// submit form
+Route::post('/pengajuan', function () {
+    return back();
+})->name('form.pengajuan');
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 }); 
 Route::post('/verifikasi', [RecipientVerificationController::class], 'store')->middleware('auth')->name('verifikasi.store');

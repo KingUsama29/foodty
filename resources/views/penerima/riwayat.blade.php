@@ -8,11 +8,10 @@
         Dashboard
     </a>
 
-<a href="#"
-   class="list-group-item list-group-item-action disabled d-flex align-items-center">
+<a href="{{ route('form.pilih') }}"
+   class="list-group-item list-group-item-action d-flex align-items-center">
     <i class="fa-solid fa-id-card fa-fw me-3"></i>
     Verifikasi Data
-    <span class="badge bg-secondary ms-auto">dody</span>
 </a>
 
     <a href="{{ route('penerima.riwayat') }}"

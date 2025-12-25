@@ -2,17 +2,20 @@
 
 {{-- ================= SIDEBAR MENU PENERIMA ================= --}}
 @section('sidebar-menu')
-    <a href="#" class="list-group-item list-group-item-action active d-flex align-items-center">
+    <a href="{{ route('penerima.dashboard') }}"
+       class="list-group-item list-group-item-action active d-flex align-items-center">
         <i class="fa-solid fa-house fa-fw me-3"></i>
         Dashboard
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('form.pilih') }}"
+       class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-id-card fa-fw me-3"></i>
         Verifikasi Data
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('penerima.riwayat') }}"
+       class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-clock-rotate-left fa-fw me-3"></i>
         Riwayat
     </a>
@@ -45,9 +48,10 @@
                     <p class="small text-muted">
                         Lengkapi verifikasi data diri seperti foto KTP dan data pendukung lainnya.
                     </p>
-                    <button class="btn btn-primary mt-2">
+                    <a href="{{ route('form.pilih') }}"
+                       class="btn btn-primary mt-2">
                         Verifikasi Sekarang
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
