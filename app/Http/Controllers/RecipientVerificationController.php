@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\RecipientVerification;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class RecipientVerificationController extends Controller
@@ -53,7 +55,7 @@ class RecipientVerificationController extends Controller
             'district'      => 'required|string|max:50',
             'postal_code'   => 'required|digits:5',
         ]);
-
+        DB::beginTransaction();
         try{
             $verification = RecipientVerification::create([
                 'user_id'       =>  $request->user()->id,
@@ -84,12 +86,14 @@ class RecipientVerificationController extends Controller
                 ]);
             }
 
+            DB::commit();
             if($request->expectsJson() || $request->is('api/*')){
                 return response()->json(['message' => 'Verifikasi Akun Telah Dikirim,  menunggu persetujuan admin.', 'verification' => $verification], 201);
             }
             return redirect('/dashboard')->with('success','Data Verifikasi Berhasil Dikirim, Silahkan Menunggu Persetujuan Admin!');
         }catch (\Throwable $e) {
             // Log untuk debugging
+            DB::rollBack();
             Log::error('Recipient verification store failed', [
                 'user_id' => $request->user()->id,
                 'error' => $e->getMessage(),
