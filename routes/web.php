@@ -41,18 +41,24 @@ Route::middleware('auth')->group(function(){
         Route::get('/dashboard', [PenerimaController::class, 'index'])->name('penerima.dashboard');
     });
 
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-}); 
-Route::post('/verifikasi', [RecipientVerificationController::class], 'store')->middleware('auth')->name('verifikasi.store');
+    //tambahan
+            Route::get('/riwayat', function () {
+            return view('penerima.riwayat');
+        })->name('penerima.riwayat');
+    //tambahan
 
-// ================= FORM PENGAJUAN (PUNYAMU) =================
 
-// tampilkan halaman form
+    // tampilkan halaman form
 Route::get('/pilihform', function () {
-    return view('penerima2.form.pilihform');
-});
+    return view('penerima.pilihform');
+})->name('form.pilih');
 
 // submit form
 Route::post('/pengajuan', function () {
     return back();
-});
+})->name('form.pengajuan');
+
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+}); 
+Route::post('/verifikasi', [RecipientVerificationController::class], 'store')->middleware('auth')->name('verifikasi.store');
+

@@ -1,15 +1,35 @@
 @extends('layouts.dashboard')
 
+{{-- ================= SIDEBAR MENU FORM ================= --}}
 @section('sidebar-menu')
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+
+    {{-- DASHBOARD --}}
+    <a href="{{ route('penerima.dashboard') }}"
+       class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-house fa-fw me-3"></i>
         Dashboard
     </a>
+
+    {{-- FORM (HALAMAN INI) --}}
+    <a href="{{ route('form.pilih') }}"
+       class="list-group-item list-group-item-action active d-flex align-items-center">
+        <i class="fa-solid fa-file-pen fa-fw me-3"></i>
+        Pengajuan Bantuan
+    </a>
+
+    {{-- RIWAYAT --}}
+    <a href="{{ route('penerima.riwayat') }}"
+       class="list-group-item list-group-item-action d-flex align-items-center">
+        <i class="fa-solid fa-clock-rotate-left fa-fw me-3"></i>
+        Riwayat
+    </a>
+
 @endsection
+
 
 @section('content')
 
-{{-- HEADER --}}
+{{-- ================= HEADER ================= --}}
 <div class="card shadow-sm mb-4">
     <div class="card-body d-flex align-items-center gap-2">
         <i class="fa-solid fa-file-pen fa-lg text-primary"></i>
@@ -20,7 +40,7 @@
     </div>
 </div>
 
-{{-- FULL WIDTH FORM --}}
+{{-- ================= FORM ================= --}}
 <div class="card shadow-lg border-0 w-100" style="border-radius:28px;">
     <div class="card-body p-4 p-md-5">
 
@@ -75,7 +95,6 @@
                 </button>
             </div>
 
-            {{-- UPLOAD FOTO --}}
             <div class="col-12">
                 <hr class="my-4">
             </div>
@@ -83,11 +102,8 @@
             {{-- FOTO KTP --}}
             <div class="col-12 col-md-4 text-center">
                 <label class="form-label fw-semibold">Foto KTP</label>
-                <input type="file"
-                       class="form-control"
-                       accept="image/*"
+                <input type="file" class="form-control" accept="image/*"
                        onchange="previewImage(this, 'previewKtp')">
-
                 <img id="previewKtp"
                      class="img-fluid rounded shadow-sm mt-2 d-none"
                      style="max-height:180px;">
@@ -96,11 +112,8 @@
             {{-- SELFIE + KTP --}}
             <div class="col-12 col-md-4 text-center">
                 <label class="form-label fw-semibold">Selfie + KTP</label>
-                <input type="file"
-                       class="form-control"
-                       accept="image/*"
+                <input type="file" class="form-control" accept="image/*"
                        onchange="previewImage(this, 'previewSelfie')">
-
                 <img id="previewSelfie"
                      class="img-fluid rounded shadow-sm mt-2 d-none"
                      style="max-height:180px;">
@@ -109,11 +122,8 @@
             {{-- KK --}}
             <div class="col-12 col-md-4 text-center">
                 <label class="form-label fw-semibold">Kartu Keluarga (KK)</label>
-                <input type="file"
-                       class="form-control"
-                       accept="image/*"
+                <input type="file" class="form-control" accept="image/*"
                        onchange="previewImage(this, 'previewKk')">
-
                 <img id="previewKk"
                      class="img-fluid rounded shadow-sm mt-2 d-none"
                      style="max-height:180px;">
@@ -124,19 +134,16 @@
     </div>
 </div>
 
-{{-- JS PREVIEW --}}
+{{-- ================= JS PREVIEW ================= --}}
 <script>
     function previewImage(input, previewId) {
         const preview = document.getElementById(previewId);
-
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-
-            reader.onload = function (e) {
+            reader.onload = e => {
                 preview.src = e.target.result;
                 preview.classList.remove('d-none');
             };
-
             reader.readAsDataURL(input.files[0]);
         }
     }
