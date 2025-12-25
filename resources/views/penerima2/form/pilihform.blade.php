@@ -46,7 +46,7 @@
             <div class="col-12 col-md-6">
                 <select class="form-select rounded-pill shadow-sm">
                     <option>Pilih Salah Satu</option>
-                    <option>Lansia Sebatang Kara</option>
+                    <option>Lansia</option>
                     <option>Ibu Bayi / Balita</option>
                     <option>Bencana Alam</option>
                     <option>Kehilangan Pekerjaan</option>
