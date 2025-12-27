@@ -1,7 +1,7 @@
 <aside class="sidebar d-none d-lg-flex flex-column border-end">
 
     {{-- PROFILE --}}
-    <div class="p-4 border-bottom text-center">
+    <div class="p-3 border-bottom text-center">
         <i class="fa-solid fa-circle-user fa-3x profile-icon mb-2"></i>
         <div class="fw-semibold">Selamat Datang</div>
         <div class="fw-bold">[User]</div>
