@@ -53,4 +53,8 @@ class User extends Authenticatable
     public function recipientVerification(){
         return $this->hasOne(RecipientVerification::class);
     }
+
+    public function petugasprofile(){
+        return $this->hasMany(PetugasProfile::class);
+    }
 }
