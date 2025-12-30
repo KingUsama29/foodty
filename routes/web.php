@@ -48,12 +48,27 @@ Route::middleware('auth')->group(function(){
     //tambahan
 
 
-    // tampilkan halaman form
+// tampilkan halaman form
 Route::get('/pilihform', function () {
     return view('penerima.pilihform');
 })->name('form.pilih');
 
 // submit form
+Route::post('/pengajuan', function () {
+    return back();
+})->name('form.pengajuan');
+
+// tampilkan halaman verifikasi
+Route::get('/pilihform', function () {
+    return view('penerima.pilihform');
+})->name('form.pilih');
+
+// tampilkan halaman pengajuan
+Route::get('/pengajuan', function () {
+    return view('penerima.pengajuan');
+})->name('pengajuan');
+
+// submit pengajuan
 Route::post('/pengajuan', function () {
     return back();
 })->name('form.pengajuan');
