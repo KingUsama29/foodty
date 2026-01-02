@@ -3,19 +3,17 @@
 {{-- ================= SIDEBAR MENU PENERIMA ================= --}}
 @section('sidebar-menu')
     <a href="{{ route('penerima.dashboard') }}"
-       class="list-group-item list-group-item-action active d-flex align-items-center">
+        class="list-group-item list-group-item-action active d-flex align-items-center">
         <i class="fa-solid fa-house fa-fw me-3"></i>
         Dashboard
     </a>
 
-    <a href="{{ route('form.pilih') }}"
-       class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('verifikasi') }}" class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-id-card fa-fw me-3"></i>
         Verifikasi Data
     </a>
 
-    <a href="{{ route('penerima.riwayat') }}"
-       class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('penerima.riwayat') }}" class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-clock-rotate-left fa-fw me-3"></i>
         Riwayat
     </a>
@@ -48,15 +46,14 @@
                     <p class="small text-muted">
                         Lengkapi verifikasi data diri seperti foto KTP dan data pendukung lainnya.
                     </p>
-                    <a href="{{ route('form.pilih') }}"
-                       class="btn btn-primary mt-2">
+                    <a href="{{ route('verifikasi') }}" class="btn btn-primary mt-2">
                         Verifikasi Sekarang
                     </a>
                 </div>
             </div>
         </div>
 
-        
+
         {{-- RIWAYAT --}}
         <div class="col-12 col-md-6">
             <div class="card h-100 shadow-sm">
@@ -66,10 +63,9 @@
                     <p class="small text-muted">
                         Lihat riwayat pengajuan dan status bantuan yang pernah diajukan.
                     </p>
-                        <a href="{{ route('penerima.riwayat') }}"
-                            class="btn btn-outline-primary mt-2">
-                            Lihat Riwayat
-                        </a>
+                    <a href="{{ route('penerima.riwayat') }}" class="btn btn-outline-primary mt-2">
+                        Lihat Riwayat
+                    </a>
                 </div>
             </div>
         </div>

@@ -15,7 +15,7 @@ class RecipientVerificationController extends Controller
      */
     public function index()
     {
-        //
+        return view('penerima.pilihform');
     }
 
     /**
