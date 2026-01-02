@@ -15,7 +15,7 @@ class RecipientVerificationController extends Controller
      */
     public function index()
     {
-        //
+        return view('penerima.pilihform');
     }
 
     /**
@@ -31,11 +31,16 @@ class RecipientVerificationController extends Controller
      */
     public function store(Request $request)
     {
-        $check = RecipientVerification::where('user_id', $request->user()->id)->latest('id')->first();
-    
-        if($check && in_array($check->verification_status, ['pending', 'approved'], true)){
-            $message = $check->verification_status === 'pending' ? 'Verifikasi kamu masih diproses admin. Tunggu dulu ya.' : 'Akun kamu sudah terverifikasi. Tidak perlu verifikasi ulang.';
-            
+        $user = $request->user();
+
+        // 1) Cegah submit ulang kalau masih pending / sudah approved
+        $check = RecipientVerification::where('user_id', $user->id)->latest('id')->first();
+
+        if ($check && in_array($check->verification_status, ['pending', 'approved'], true)) {
+            $message = $check->verification_status === 'pending'
+                ? 'Verifikasi kamu masih diproses admin. Tunggu dulu ya.'
+                : 'Akun kamu sudah terverifikasi. Tidak perlu verifikasi ulang.';
+
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => $message], 422);
             }
@@ -43,6 +48,18 @@ class RecipientVerificationController extends Controller
             return redirect('/dashboard')->with('failed', $message);
         }
 
+        // 2) Pastikan NIK ada di akun (diambil dari user login, bukan dari form)
+        if (!$user->nik) {
+            $msg = 'NIK kamu belum terdaftar di akun. Silahkan lengkapi profil dulu.';
+
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['message' => $msg], 422);
+            }
+
+            return back()->withInput()->with('failed', $msg);
+        }
+
+        // 3) Validasi input form (tanpa nik)
         $validated = $request->validate([
             'ktp'           => 'required|image|mimes:png,jpg,jpeg|max:2048',
             'selfie_ktp'    => 'required|image|mimes:png,jpg,jpeg|max:2048',
@@ -55,27 +72,36 @@ class RecipientVerificationController extends Controller
             'district'      => 'required|string|max:50',
             'postal_code'   => 'required|digits:5',
         ]);
+
         DB::beginTransaction();
-        try{
+
+        try {
+            // 4) Simpan data verifikasi
             $verification = RecipientVerification::create([
-                'user_id'       =>  $request->user()->id,
-                'full_name'     =>  $validated['full_name'],
-                'kk_number'     =>  $validated['kk_number'],
-                'alamat'        =>  $validated['alamat'],
-                'province'      =>  $validated['province'],
-                'city'          =>  $validated['city'],
-                'district'      =>  $validated['district'],
-                'postal_code'   =>  $validated['postal_code'],
+                'user_id'       => $user->id,
+                'nik'           => $user->nik, // AUTO dari user login
+                'full_name'     => $validated['full_name'],
+                'kk_number'     => $validated['kk_number'],
+                'alamat'        => $validated['alamat'],
+                'province'      => $validated['province'],
+                'city'          => $validated['city'],
+                'district'      => $validated['district'],
+                'postal_code'   => $validated['postal_code'],
+                // optional kalau kolomnya ada & kamu mau set manual:
+                // 'verification_status' => 'pending',
             ]);
 
+            // 5) Simpan dokumen
             $files = [
                 'ktp'        => $request->file('ktp'),
                 'selfie_ktp' => $request->file('selfie_ktp'),
                 'kk'         => $request->file('kk'),
             ];
 
-            foreach($files as $type => $file){
-                $path = $file->store("verifications/{$verification->id}", "public");
+            foreach ($files as $type => $file) {
+                if (!$file) continue; // safety
+
+                $path = $file->store("verifications/{$verification->id}", 'public');
 
                 $verification->documents()->create([
                     'type'          => $type,
@@ -87,15 +113,20 @@ class RecipientVerificationController extends Controller
             }
 
             DB::commit();
-            if($request->expectsJson() || $request->is('api/*')){
-                return response()->json(['message' => 'Verifikasi Akun Telah Dikirim,  menunggu persetujuan admin.', 'verification' => $verification], 201);
+
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Verifikasi akun berhasil dikirim, menunggu persetujuan admin.',
+                    'verification' => $verification
+                ], 201);
             }
-            return redirect('/dashboard')->with('success','Data Verifikasi Berhasil Dikirim, Silahkan Menunggu Persetujuan Admin!');
-        }catch (\Throwable $e) {
-            // Log untuk debugging
+
+            return redirect('/dashboard')->with('success', 'Data Verifikasi Berhasil Dikirim, Silahkan Menunggu Persetujuan Admin!');
+        } catch (\Throwable $e) {
             DB::rollBack();
+
             Log::error('Recipient verification store failed', [
-                'user_id' => $request->user()->id,
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
 
@@ -105,10 +136,10 @@ class RecipientVerificationController extends Controller
                 return response()->json(['message' => $failMsg], 500);
             }
 
-            // withInput() biar form gak kosong lagi
             return back()->withInput()->with('failed', $failMsg);
         }
     }
+
 
     /**
      * Display the specified resource.
