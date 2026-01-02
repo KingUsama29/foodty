@@ -66,18 +66,11 @@ Route::middleware('auth')->group(function(){
         Route::get('/verifikasi', [RecipientVerificationController::class, 'index'])->name('verifikasi');
         Route::post('/verifikasi', [RecipientVerificationController::class, 'store'])->name('verifikasi.logic');
     });
-
-    //tambahan
-            Route::get('/riwayat', function () {
+    Route::prefix('penerima')->middleware('role:user')->group(function () {
+        Route::get('/riwayat', function () {
             return view('penerima.riwayat');
         })->name('penerima.riwayat');
-    //tambahan
+    });
 
-// submit form
-Route::post('/pengajuan', function () {
-    return back();
-})->name('form.pengajuan');
-
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-}); 
-
+    Route::post('/logout',[AuthController::class,'logout'])->name('logout');
+});
