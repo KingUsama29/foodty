@@ -1,8 +1,7 @@
 body {
     font-family: 'Poppins', sans-serif;
 }
-
-.login-page {
+.auth-wrapper {
     min-height: 100vh;
     background: url('/public/gambar/background_login.png') center / cover no-repeat;
     display: flex;
