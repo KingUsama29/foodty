@@ -10,6 +10,7 @@ class RecipientVerification extends Model
     use HasFactory;
     protected $fillable = [
         'user_id',
+        'nik',
         'full_name',
         'kk_number',
         'alamat',

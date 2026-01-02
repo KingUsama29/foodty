@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
             return view('penerima.pilihform');
         })->name('form.pilih');
 
-        // halaman pengajuan
+        //halaman pengajuan
         Route::get('/pengajuan', function () {
             return view('penerima.pengajuan');
         })->name('pengajuan');
