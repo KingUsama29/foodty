@@ -45,13 +45,11 @@ Route::middleware('auth')->group(function(){
     Route::prefix('penerima')->middleware('role:user')->group(function(){
         Route::get('/dashboard', [PenerimaController::class, 'index'])->name('penerima.dashboard');
     });
-
-    //tambahan
-            Route::get('/riwayat', function () {
+    Route::prefix('penerima')->middleware('role:user')->group(function () {
+        Route::get('/riwayat', function () {
             return view('penerima.riwayat');
         })->name('penerima.riwayat');
-    //tambahan
-
+    });
 
     // tampilkan halaman form
 Route::get('/pilihform', function () {
