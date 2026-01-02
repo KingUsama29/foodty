@@ -2,32 +2,32 @@
 
 {{-- ================= SIDEBAR MENU ADMIN ================= --}}
 @section('sidebar-menu')
-    <a href="#" class="list-group-item list-group-item-action active d-flex align-items-center">
+    <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action active d-flex align-items-center">
         <i class="fa-solid fa-house fa-fw me-3"></i>
         Dashboard
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('admin.pengajuan') }}" class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-file-circle-check fa-fw me-3"></i>
         Ajuan Bantuan
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('admin.petugas') }}" class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-users-gear fa-fw me-3"></i>
         Data Petugas
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('admin.cabang') }}" class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-location-dot fa-fw me-3"></i>
         Cabang Lokasi
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('admin.stok') }}" class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-boxes-stacked fa-fw me-3"></i>
         Stok Barang
     </a>
 
-    <a href="#" class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('admin.penyaluran') }}" class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-chart-pie fa-fw me-3"></i>
         Hasil Penyaluran
     </a>
