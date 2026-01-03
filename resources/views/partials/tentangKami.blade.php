@@ -9,7 +9,7 @@
             </div>
 
             <div class="modal-body" style="line-height: 1.8">
-                <p>
+                <p class="mb-0">
                     <strong>FoodTY</strong> merupakan platform digital penyaluran bantuan pangan yang dikembangkan
                     untuk memfasilitasi proses pendataan dan verifikasi kelayakan penerima bantuan, pengelolaan barang
                     donasi, serta penyaluran bantuan pangan secara terstruktur dan terintegrasi. Platform ini
@@ -18,6 +18,7 @@
                     data yang sistematis dan transparan, FoodTY bertujuan untuk meningkatkan efektivitas distribusi
                     bantuan pangan serta memastikan bantuan tersalurkan secara tepat sasaran kepada masyarakat yang
                     benar-benar membutuhkan.
+                </p>
             </div>
 
         </div>
