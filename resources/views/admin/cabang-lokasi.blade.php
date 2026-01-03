@@ -112,16 +112,6 @@
 
                                 <td class="text-end" style="min-width:320px;">
                                     <div class="d-inline-flex gap-2">
-                                        {{-- TOGGLE STATUS --}}
-                                        <form method="POST" action="{{ route('admin.cabang.toggle-status', $c->id) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                                                <i class="fa-solid fa-toggle-on me-1" style="color:#0d6efd;"></i>
-                                                Toggle
-                                            </button>
-                                        </form>
-
                                         {{-- EDIT --}}
                                         <a href="{{ route('admin.cabang.edit', $c->id) }}"
                                             class="btn btn-info btn-sm rounded-pill px-3 text-white">

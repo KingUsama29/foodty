@@ -11,23 +11,32 @@ use Illuminate\Support\Facades\Log;
 class FoodRequestApprovalController extends Controller
 {
     /**
-     * List permintaan (bisa filter status).
-     * GET /admin/food-requests?status=pending
+     * List permintaan (bisa search + filter status).
+     * GET /admin/food-requests?q=...&status=pending
      */
     public function index(Request $request)
     {
-        $status = $request->query('status', 'pending');
+        $q = $request->query('q');
+        $status = $request->query('status'); // null = semua
 
-        $foodRequests = FoodRequest::with('user')
-            ->when($status, function ($q) use ($status) {
-                $q->where('status', $status);
+        $requests = FoodRequest::with('user')
+            ->when($q, function ($qq) use ($q) {
+                $qq->whereHas('user', function ($u) use ($q) {
+                    $u->where('name', 'like', "%$q%")
+                    ->orWhere('email', 'like', "%$q%")
+                    ->orWhere('nik', 'like', "%$q%");
+                })
+                ->orWhere('category', 'like', "%$q%")
+                ->orWhere('reason', 'like', "%$q%");
             })
+            ->when($status, fn($qq) => $qq->where('status', $status))
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.food_requests.index', compact('foodRequests', 'status'));
+        return view('admin.pengajuan-admin', compact('requests', 'q', 'status'));
     }
+
 
     /**
      * Detail permintaan.
@@ -37,7 +46,11 @@ class FoodRequestApprovalController extends Controller
     {
         $foodRequest = FoodRequest::with('user')->findOrFail($id);
 
-        return view('admin.food_requests.show', compact('foodRequest'));
+        // kalau detail kamu masih pakai blade lama:
+        // return view('admin.pengajuan-detail', compact('foodRequest'));
+
+        // atau kalau pakai view food_requests.show, biarin:
+        return view('admin.pengajuan-detail', compact('foodRequest'));
     }
 
     /**
@@ -48,7 +61,6 @@ class FoodRequestApprovalController extends Controller
     {
         $validate = $request->validate([
             'status' => 'required|in:approved,rejected',
-            // optional, kalau kamu punya kolom alasan penolakan
             'reject_reason' => 'nullable|string|max:255',
         ]);
 
@@ -57,41 +69,45 @@ class FoodRequestApprovalController extends Controller
         try {
             $foodRequest = FoodRequest::lockForUpdate()->findOrFail($id);
 
-            // optional: cegah kalau sudah diproses
+            // cegah kalau sudah diproses
             if ($foodRequest->status !== 'pending') {
-                return back()->with('failed', 'Permintaan ini sudah diproses sebelumnya.');
+                DB::rollBack();
+                return back()->with('error', 'Pengajuan ini sudah diproses sebelumnya.');
             }
 
             $foodRequest->status = $validate['status'];
 
-            // Kalau kamu punya kolom reject_reason di tabel food_requests:
+            // kalau tabel punya kolom reject_reason (opsional)
             if ($validate['status'] === 'rejected') {
-                $foodRequest->reject_reason = $validate['reject_reason'] ?? null;
+                if (array_key_exists('reject_reason', $foodRequest->getAttributes())) {
+                    $foodRequest->reject_reason = $validate['reject_reason'] ?? null;
+                }
             } else {
-                // kalau approve, kosongin alasan
-                if (isset($foodRequest->reject_reason)) {
+                if (array_key_exists('reject_reason', $foodRequest->getAttributes())) {
                     $foodRequest->reject_reason = null;
                 }
             }
 
-            // Optional: simpan siapa admin yang memproses (kalau ada kolomnya)
-            // $foodRequest->approved_by = $request->user()->id;
+            // kalau kamu punya reviewed_at, ini bagus banget ditambah (opsional)
+            if (array_key_exists('reviewed_at', $foodRequest->getAttributes())) {
+                $foodRequest->reviewed_at = now();
+            }
 
             $foodRequest->save();
 
             DB::commit();
 
-            return back()->with('success', 'Status permintaan berhasil diperbarui.');
+            return back()->with('success', 'Status pengajuan berhasil diperbarui.');
         } catch (\Throwable $e) {
             DB::rollBack();
 
             Log::error('Food Request status update failed', [
-                'admin_id' => $request->user()->id,
+                'admin_id' => optional($request->user())->id,
                 'food_request_id' => $id,
                 'error' => $e->getMessage(),
             ]);
 
-            return back()->with('failed', 'Terjadi kesalahan saat update status. Coba lagi ya.');
+            return back()->with('error', 'Terjadi kesalahan saat update status. Coba lagi ya.');
         }
     }
 }
