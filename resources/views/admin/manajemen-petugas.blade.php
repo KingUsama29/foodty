@@ -1,102 +1,235 @@
+{{-- resources/views/admin/manajemen-petugas.blade.php --}}
 @extends('layouts.dashboard')
 
-{{-- ================= SIDEBAR MENU ADMIN ================= --}}
 @section('sidebar-menu')
+    {{-- kalau kamu punya partial sidebar admin, pakai ini biar konsisten --}}
+    {{-- @include('partials.sidebar-admin', ['active' => 'petugas']) --}}
+
+    {{-- versi inline --}}
     <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-house fa-fw me-3"></i>
-        Dashboard
+        <i class="fa-solid fa-house fa-fw me-3"></i> Dashboard
     </a>
 
     <a href="{{ route('admin.pengajuan') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-file-circle-check fa-fw me-3"></i>
-        Ajuan Bantuan
+        <i class="fa-solid fa-file-circle-check fa-fw me-3"></i> Ajuan Bantuan
     </a>
 
     <a href="{{ route('admin.petugas') }}" class="list-group-item list-group-item-action active d-flex align-items-center">
-        <i class="fa-solid fa-users-gear fa-fw me-3"></i>
-        Data Petugas
+        <i class="fa-solid fa-users-gear fa-fw me-3"></i> Data Petugas
     </a>
 
     <a href="{{ route('admin.cabang') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-location-dot fa-fw me-3"></i>
-        Cabang Lokasi
+        <i class="fa-solid fa-location-dot fa-fw me-3"></i> Cabang Lokasi
     </a>
 
     <a href="{{ route('admin.stok') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-boxes-stacked fa-fw me-3"></i>
-        Stok Barang
+        <i class="fa-solid fa-boxes-stacked fa-fw me-3"></i> Stok Barang
     </a>
 
     <a href="{{ route('admin.penyaluran') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-chart-pie fa-fw me-3"></i>
-        Hasil Penyaluran
+        <i class="fa-solid fa-chart-pie fa-fw me-3"></i> Hasil Penyaluran
     </a>
 @endsection
 
-
-{{-- ================= KONTEN DATA PETUGAS ================= --}}
 @section('content')
+    @php
+        $q = $q ?? request('q');
 
-{{-- HEADER --}}
-<div class="card shadow-sm mb-4">
-    <div class="card-body d-flex align-items-center">
-        <i class="fa-solid fa-users-gear fa-lg text-primary me-3"></i>
-        <div>
-            <h5 class="mb-1">Manajemen Petugas</h5>
-            <small class="text-muted">
-                Daftar petugas penyaluran bantuan
-            </small>
+        $isPaginator =
+            $petugas instanceof \Illuminate\Contracts\Pagination\Paginator ||
+            $petugas instanceof \Illuminate\Contracts\Pagination\LengthAwarePaginator;
+    @endphp
+
+    {{-- HEADER (tetep gaya yang ini) --}}
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center">
+                <span class="badge text-bg-primary rounded-3 p-3 me-3">
+                    <i class="fa-solid fa-users-gear fa-lg"></i>
+                </span>
+                <div>
+                    <h5 class="mb-1">Manajemen Petugas</h5>
+                    <small class="text-muted">Kelola akun petugas penyaluran (CRUD)</small>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                {{-- SEARCH --}}
+                <form method="GET" class="d-flex gap-2">
+                    <input type="text" name="q" value="{{ $q }}" class="form-control form-control-sm"
+                        placeholder="Cari nama / email / NIK / telp...">
+                    <button class="btn btn-primary btn-sm rounded-pill px-3">
+                        Cari
+                    </button>
+                </form>
+
+                {{-- ADD --}}
+                <a href="{{ route('admin.petugas.create') }}" class="btn btn-success btn-sm rounded-pill px-3">
+                    <i class="fa-solid fa-plus me-1 text-white"></i> Tambah
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
-{{-- TABEL PETUGAS --}}
-<div class="card shadow-sm">
-    <div class="card-body">
+    {{-- FLASH --}}
+    @if (session('success'))
+        <div class="alert alert-success shadow-sm border-0 rounded-4">
+            <i class="fa-solid fa-circle-check me-1"></i> {{ session('success') }}
+        </div>
+    @endif
 
-        <table class="table align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Nama</th>
-                    <th>No Telepon</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
+    @if (session('error'))
+        <div class="alert alert-danger shadow-sm border-0 rounded-4">
+            <i class="fa-solid fa-circle-xmark me-1"></i> {{ session('error') }}
+        </div>
+    @endif
 
-                <tr>
-                    <td>Rizman</td>
-                    <td>0819029301</td>
-                    <td>
-                        <span class="badge bg-success rounded-pill px-3">Online</span>
-                    </td>
-                    <td>
-                        <a href="{{ route('admin.petugas.detail', 1) }}"
-                           class="btn btn-warning btn-sm rounded-pill px-3">
-                            Detail
-                        </a>
-                    </td>
-                </tr>
+    {{-- TABLE (ringkas) --}}
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Petugas</th>
+                            <th>Cabang</th>
+                            <th>Status</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
 
-                <tr>
-                    <td>Andi</td>
-                    <td>0821123456</td>
-                    <td>
-                        <span class="badge bg-secondary rounded-pill px-3">Offline</span>
-                    </td>
-                    <td>
-                        <a href="{{ route('admin.petugas.detail', 2) }}"
-                           class="btn btn-warning btn-sm rounded-pill px-3">
-                            Detail
-                        </a>
-                    </td>
-                </tr>
+                    <tbody>
+                        @forelse($petugas as $p)
+                            @php
+                                $profile = $p->petugas ?? null;
 
-            </tbody>
-        </table>
+                                $photoUrl = $profile?->file_path ? asset('storage/' . $profile->file_path) : null;
+                                $email = $p->email ?? '-';
 
+                                $cabangNama = $profile?->cabang?->name ?? '-';
+
+                                $active = (bool) ($profile?->is_active ?? 0);
+                                $badgeClass = $active ? 'bg-success' : 'bg-secondary';
+                                $statusText = $active ? 'Aktif' : 'Non-Aktif';
+                                $statusIcon = $active ? 'fa-signal' : 'fa-circle-minus';
+                            @endphp
+
+                            <tr>
+                                {{-- PETUGAS --}}
+                                <td style="min-width: 280px;">
+                                    <div class="d-flex align-items-center gap-3">
+                                        @if ($photoUrl)
+                                            <img src="{{ $photoUrl }}" alt="Foto Petugas"
+                                                class="rounded-circle shadow-sm"
+                                                style="width:44px;height:44px;object-fit:cover;">
+                                        @else
+                                            <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center shadow-sm"
+                                                style="width:44px;height:44px;">
+                                                <i class="fa-solid fa-user text-muted"></i>
+                                            </div>
+                                        @endif
+
+                                        <div>
+                                            <div class="fw-semibold">{{ $p->name ?? '-' }}</div>
+                                            <div class="text-muted small">{{ $email }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                {{-- CABANG --}}
+                                <td style="min-width: 180px;">
+                                    <span class="badge bg-light text-dark rounded-pill px-3 py-2">
+                                        {{ $cabangNama }}
+                                    </span>
+                                </td>
+
+                                {{-- STATUS --}}
+                                <td style="min-width: 160px;">
+                                    <span class="badge {{ $badgeClass }} rounded-pill px-3 py-2">
+                                        <i class="fa-solid {{ $statusIcon }} me-1 text-white"></i>
+                                        {{ $statusText }}
+                                    </span>
+                                </td>
+
+                                {{-- ================= AKSI (ANTI OVERRIDE: ICON PASTI PUTIH) ================= --}}
+                                <td class="text-end" style="min-width: 240px;">
+                                    <div class="d-inline-flex gap-2">
+
+                                        {{-- DETAIL --}}
+                                        <a href="{{ route('admin.petugas.detail', $p->id) }}"
+                                            class="btn btn-warning btn-sm rounded-pill px-3 text-white">
+                                            <i class="fa-solid fa-eye me-1" style="color:#fff !important;"></i> Detail
+                                        </a>
+
+                                        {{-- EDIT --}}
+                                        <a href="{{ route('admin.petugas.edit', $p->id) }}"
+                                            class="btn btn-info btn-sm rounded-pill px-3 text-white">
+                                            <i class="fa-solid fa-pen-to-square me-1" style="color:#fff !important;"></i>
+                                            Edit
+                                        </a>
+
+                                        {{-- HAPUS (TRIGGER MODAL) --}}
+                                        <button class="btn btn-danger btn-sm rounded-pill px-3" data-bs-toggle="modal"
+                                            data-bs-target="#del{{ $p->id }}">
+                                            <i class="fa-solid fa-trash me-1" style="color:#fff !important;"></i> Hapus
+                                        </button>
+                                    </div>
+
+                                    {{-- MODAL DELETE --}}
+                                    <div class="modal fade" id="del{{ $p->id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4">
+                                                <div class="modal-body p-4">
+                                                    <div class="text-center">
+                                                        <i
+                                                            class="fa-solid fa-triangle-exclamation fa-2xl text-danger mb-3"></i>
+                                                        <div class="fw-semibold mb-1">Hapus data petugas?</div>
+                                                        <div class="text-muted mb-3" style="font-size: 14px;">
+                                                            Aksi ini tidak bisa dibatalkan.
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center gap-2">
+                                                        <form method="POST"
+                                                            action="{{ route('admin.petugas.destroy', $p->id) }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="btn btn-danger rounded-pill px-4">
+                                                                <i class="fa-solid fa-trash me-1"
+                                                                    style="color:#fff !important;"></i> Ya, Hapus
+                                                            </button>
+                                                        </form>
+
+                                                        <button class="btn btn-secondary rounded-pill px-4"
+                                                            data-bs-dismiss="modal">
+                                                            Batal
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-folder-open me-1"></i>
+                                    Belum ada data petugas.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- PAGINATION --}}
+            @if ($isPaginator)
+                <div class="mt-3">
+                    {{ $petugas->links() }}
+                </div>
+            @endif
+        </div>
     </div>
-</div>
-
 @endsection
