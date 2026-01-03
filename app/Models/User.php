@@ -57,4 +57,10 @@ class User extends Authenticatable
     public function petugasprofile(){
         return $this->hasMany(PetugasProfile::class);
     }
+
+    public function petugas()
+    {
+        return $this->hasOne(PetugasProfile::class, 'user_id');
+    }
+
 }

@@ -25,7 +25,7 @@ Route::prefix('admin')->middleware('role:admin')->group(function () {
         ->name('admin.food-requests.show');
     Route::patch('/food-requests/{id}/status', [FoodRequestApprovalController::class, 'updateStatus'])
         ->name('admin.food-requests.updateStatus');
-        Route::get('/pengajuan', function () {
+    Route::get('/pengajuan', function () {
         return view('admin.pengajuan-admin');
         })->name('admin.pengajuan');
 
