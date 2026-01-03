@@ -28,7 +28,7 @@ class AuthController extends Controller
             'nik' => $validate['nik'],
             'email' => $validate['email'],
             'no_telp' => $validate['no_telp'],
-            'role' => 'user',
+            'role' => 'penerima',
             'password' => bcrypt($validate['password']),
         ]);
 

@@ -4,6 +4,11 @@
     <div class="p-3 border-bottom text-center" style="margin-top: 70px;">
         @php
             $user = auth()->user();
+
+            // status verifikasi penerima: ambil attempt terakhir
+            $status = $user?->latestRecipientVerification?->verification_status ?? 'pending';
+
+            // foto khusus petugas (kalau penerima ga punya foto, otomatis fallback)
             $photo = $user?->petugas?->file_path ? asset('storage/' . $user->petugas->file_path) : null;
         @endphp
 
@@ -24,6 +29,28 @@
         <div class="fw-semibold">Selamat Datang</div>
         <div class="fw-bold">{{ $user->name ?? '-' }}</div>
         <small class="text-muted text-capitalize">{{ $user->role ?? '-' }}</small>
+
+        {{-- BADGE VERIFIKASI (KHUSUS PENERIMA) --}}
+        @if (($user->role ?? '') === 'penerima')
+            @php
+                $badgeClass = match ($status) {
+                    'approved' => 'success',
+                    'rejected' => 'danger',
+                    default => 'warning',
+                };
+                $badgeText = match ($status) {
+                    'approved' => 'Terverifikasi',
+                    'rejected' => 'Ditolak',
+                    default => 'Menunggu Verifikasi',
+                };
+            @endphp
+
+            <div class="mt-2">
+                <span class="badge bg-{{ $badgeClass }} rounded-pill px-3 py-2">
+                    {{ $badgeText }}
+                </span>
+            </div>
+        @endif
     </div>
 
     {{-- MENU --}}

@@ -10,7 +10,7 @@ class DashboardController extends Controller
     public function index(Request $request){
         $role = $request->user()->role;
 
-        if($role === "user"){
+        if($role === "penerima"){
             return redirect()->route('penerima.dashboard');
         }elseif($role === "petugas"){
             return redirect()->route('petugas.dashboard');

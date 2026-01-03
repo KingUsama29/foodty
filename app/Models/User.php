@@ -51,9 +51,14 @@ class User extends Authenticatable
     }
 
     public function recipientVerification(){
-        return $this->hasOne(RecipientVerification::class);
+        return $this->hasMany(RecipientVerification::class);
     }
 
+    public function latestRecipientVerification()
+    {
+        return $this->hasOne(\App\Models\RecipientVerification::class, 'user_id')->latestOfMany();
+    }
+    
     public function petugasprofile(){
         return $this->hasMany(PetugasProfile::class);
     }

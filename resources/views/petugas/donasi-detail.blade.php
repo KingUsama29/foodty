@@ -5,62 +5,143 @@
 @endsection
 
 @section('content')
+    @php
+        $badge = match ($donation->status) {
+            'accepted' => 'success',
+            'rejected' => 'danger',
+            default => 'warning',
+        };
+
+        $statusText = match ($donation->status) {
+            'accepted' => 'Diterima',
+            'rejected' => 'Ditolak',
+            default => 'Menunggu',
+        };
+
+        $statusIcon = match ($donation->status) {
+            'accepted' => 'fa-circle-check',
+            'rejected' => 'fa-circle-xmark',
+            default => 'fa-clock',
+        };
+    @endphp
+
+    {{-- HEADER --}}
     <div class="card shadow-sm mb-4">
-        <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div class="d-flex align-items-center">
-                <i class="fa-solid fa-file-lines fa-lg text-primary me-3"></i>
+                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center me-3"
+                    style="width:44px;height:44px;">
+                    <i class="fa-solid fa-file-lines text-primary"></i>
+                </div>
                 <div>
                     <h5 class="mb-1">Detail Donasi</h5>
-                    <small class="text-muted">Donasi ID: {{ $donation->id }}</small>
+                    <small class="text-muted">
+                        Donasi ID: <span class="fw-semibold">#{{ $donation->id }}</span>
+                    </small>
                 </div>
             </div>
 
-            <a href="{{ route('petugas.data-donasi') }}" class="btn btn-secondary btn-sm rounded-pill px-3">Kembali</a>
+            <a href="{{ route('petugas.data-donasi') }}" class="btn btn-secondary btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+            </a>
         </div>
     </div>
 
+    {{-- META BAR --}}
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+        <div class="text-muted">
+            <i class="fa-regular fa-calendar me-1"></i>
+            Waktu: <span class="fw-semibold">{{ $donation->donated_at?->format('d M Y, H:i') ?? '-' }}</span>
+            <span class="mx-2">•</span>
+            <i class="fa-solid fa-user me-1"></i>
+            Donatur: <span class="fw-semibold">{{ $donation->donor->name ?? '-' }}</span>
+        </div>
+
+        <span class="badge bg-{{ $badge }} rounded-pill px-3 py-2">
+            <i class="fa-solid {{ $statusIcon }} me-1"></i> {{ $statusText }}
+        </span>
+    </div>
+
     <div class="row g-3">
+        {{-- KIRI: HEADER DONASI --}}
         <div class="col-lg-5">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="fw-semibold mb-3">Header Donasi</h6>
-
-                    <div class="mb-2"><span class="text-muted">Donatur:</span> <span
-                            class="fw-semibold">{{ $donation->donor->name }}</span></div>
-                    <div class="mb-2"><span class="text-muted">No Telp:</span> {{ $donation->donor->phone ?? '-' }}</div>
-                    <div class="mb-2"><span class="text-muted">Waktu:</span>
-                        {{ $donation->donated_at?->format('Y-m-d H:i') }}
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-muted">Diterima Oleh:</span>
-                        <span class="fw-semibold">{{ $donation->receivedBy->name ?? '-' }}</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-muted">Kontak Petugas:</span>
-                        {{ $donation->receivedBy->no_telp ?? '-' }}
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-muted">Cabang:</span>
-                        {{ $donation->cabang->name ?? '-' }}
-                    </div>
-                    <div class="mb-2"><span class="text-muted">Status:</span> <span
-                            class="badge bg-success rounded-pill px-3 py-2 text-capitalize">{{ $donation->status }}</span>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="fw-semibold">
+                            <i class="fa-solid fa-circle-info me-1 text-primary"></i> Header Donasi
+                        </div>
                     </div>
 
+                    <div class="list-group list-group-flush">
 
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="fa-solid fa-user me-1"></i> Donatur
+                            </span>
+                            <span class="fw-semibold">{{ $donation->donor->name ?? '-' }}</span>
+                        </div>
 
-                    @if ($donation->note)
-                        <div class="mt-3">
-                            <div class="fw-semibold">Catatan:</div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="fa-solid fa-phone me-1"></i> No Telp
+                            </span>
+                            <span class="fw-semibold">{{ $donation->donor->phone ?? '-' }}</span>
+                        </div>
+
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="fa-regular fa-clock me-1"></i> Waktu
+                            </span>
+                            <span class="fw-semibold">{{ $donation->donated_at?->format('d M Y, H:i') ?? '-' }}</span>
+                        </div>
+
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="fa-solid fa-id-badge me-1"></i> Diterima Oleh
+                            </span>
+                            <span class="fw-semibold">{{ $donation->receivedBy->name ?? '-' }}</span>
+                        </div>
+
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="fa-solid fa-mobile-screen-button me-1"></i> Kontak Petugas
+                            </span>
+                            <span class="fw-semibold">{{ $donation->receivedBy->no_telp ?? '-' }}</span>
+                        </div>
+
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="fa-solid fa-building me-1"></i> Cabang
+                            </span>
+                            <span class="fw-semibold">{{ $donation->cabang->name ?? '-' }}</span>
+                        </div>
+
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">
+                                <i class="fa-solid fa-flag me-1"></i> Status
+                            </span>
+                            <span class="badge bg-{{ $badge }} rounded-pill px-3 py-2 text-capitalize">
+                                {{ $donation->status }}
+                            </span>
+                        </div>
+
+                    </div>
+
+                    @if (!empty($donation->note))
+                        <div class="alert alert-light border mt-3 mb-0">
+                            <div class="fw-semibold mb-1">
+                                <i class="fa-regular fa-note-sticky me-1"></i> Catatan
+                            </div>
                             <div class="text-muted">{{ $donation->note }}</div>
                         </div>
                     @endif
 
-                    @if ($donation->evidence_path)
+                    @if (!empty($donation->evidence_path))
                         <div class="mt-3">
                             <a class="btn btn-outline-primary btn-sm rounded-pill px-3"
                                 href="{{ asset('storage/' . $donation->evidence_path) }}" target="_blank">
-                                Lihat Bukti
+                                <i class="fa-regular fa-image me-1"></i> Lihat Bukti
                             </a>
                         </div>
                     @endif
@@ -68,33 +149,62 @@
             </div>
         </div>
 
+        {{-- KANAN: ITEM DONASI --}}
         <div class="col-lg-7">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="fw-semibold mb-3">Item Donasi</h6>
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="fw-semibold">
+                            <i class="fa-solid fa-boxes-stacked me-1 text-primary"></i> Item Donasi
+                        </div>
 
-                    <table class="table align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Item</th>
-                                <th>Kategori</th>
-                                <th>Qty</th>
-                                <th>Kondisi</th>
-                                <th>Expired</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($donation->items as $it)
+                        <span class="text-muted small">
+                            Total item: <span class="fw-semibold">{{ $donation->items?->count() ?? 0 }}</span>
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <td class="fw-semibold">{{ $it->item_name }}</td>
-                                    <td>{{ $it->category }}</td>
-                                    <td>{{ $it->qty }} {{ $it->unit }}</td>
-                                    <td>{{ $it->condition }}</td>
-                                    <td>{{ $it->expired_at ?? '-' }}</td>
+                                    <th>Item</th>
+                                    <th>Kategori</th>
+                                    <th class="text-nowrap">Qty</th>
+                                    <th class="text-nowrap">Kondisi</th>
+                                    <th class="text-nowrap">Expired</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @forelse ($donation->items as $it)
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">{{ $it->item_name }}</div>
+                                        </td>
+                                        <td class="text-capitalize">
+                                            {{ $it->category ?? '-' }}
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <span class="badge bg-light text-dark border">
+                                                {{ $it->qty ?? 0 }} {{ $it->unit ?? '' }}
+                                            </span>
+                                        </td>
+                                        <td class="text-capitalize">
+                                            {{ $it->condition ?? '-' }}
+                                        </td>
+                                        <td class="text-nowrap">
+                                            {{ $it->expired_at ?? '-' }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">
+                                            <i class="fa-regular fa-folder-open me-1"></i> Belum ada item donasi.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
 
                 </div>
             </div>

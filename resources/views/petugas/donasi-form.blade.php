@@ -6,17 +6,23 @@
 
 @section('content')
 
+    {{-- HEADER --}}
     <div class="card shadow-sm mb-4">
-        <div class="card-body d-flex align-items-center justify-content-between">
+        <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div class="d-flex align-items-center">
-                <i class="fa-solid fa-plus fa-lg text-primary me-3"></i>
+                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center me-3"
+                    style="width:44px;height:44px;">
+                    <i class="fa-solid fa-plus text-primary"></i>
+                </div>
                 <div>
                     <h5 class="mb-1">Tambah Donasi</h5>
                     <small class="text-muted">Satu donatur bisa memiliki banyak item donasi</small>
                 </div>
             </div>
 
-            <a href="{{ route('petugas.data-donasi') }}" class="btn btn-secondary btn-sm rounded-pill px-3">Kembali</a>
+            <a href="{{ route('petugas.data-donasi') }}" class="btn btn-secondary btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+            </a>
         </div>
     </div>
 
@@ -37,35 +43,61 @@
             <form method="POST" action="{{ route('petugas.donasi.store') }}" enctype="multipart/form-data">
                 @csrf
 
+                {{-- SECTION: HEADER DONASI --}}
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="fw-semibold">
+                        <i class="fa-solid fa-circle-info text-primary me-1"></i> Header Donasi
+                    </div>
+                    <span class="text-muted small">Isi data umum donasi</span>
+                </div>
+
                 <div class="row g-3 mb-3">
+                    {{-- DONATUR --}}
                     <div class="col-md-6">
-                        <label class="form-label">Donatur</label>
+                        <label class="form-label fw-semibold">
+                            <i class="fa-solid fa-user me-1"></i> Donatur
+                        </label>
 
                         {{-- hidden buat dikirim ke backend --}}
                         <input type="hidden" name="donor_id" id="donor_id" value="{{ old('donor_id') }}" required>
 
-                        <input type="text" id="donor_search" class="form-control"
-                            placeholder="Ketik nama / no telp donatur..." autocomplete="off">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" id="donor_search" class="form-control"
+                                placeholder="Ketik nama / no telp donatur..." autocomplete="off">
+                        </div>
 
+                        {{-- hasil search --}}
                         <div id="donor_results" class="list-group mt-2" style="display:none;"></div>
 
                         <small class="text-muted ms-1">Cari donatur lewat nama atau nomor telepon.</small>
                     </div>
 
-
+                    {{-- WAKTU --}}
                     <div class="col-md-6">
-                        <label class="form-label">Waktu Donasi (opsional)</label>
+                        <label class="form-label fw-semibold">
+                            <i class="fa-regular fa-clock me-1"></i> Waktu Donasi (opsional)
+                        </label>
                         <input type="datetime-local" name="donated_at" class="form-control" value="{{ old('donated_at') }}">
+                        <small class="text-muted ms-1">Kosongkan kalau mau otomatis sekarang.</small>
                     </div>
 
+                    {{-- BUKTI --}}
                     <div class="col-md-6">
-                        <label class="form-label">Bukti (opsional)</label>
+                        <label class="form-label fw-semibold">
+                            <i class="fa-regular fa-file-lines me-1"></i> Bukti (opsional)
+                        </label>
                         <input type="file" name="evidence" class="form-control">
-                        <small class="text-muted">jpg/png/pdf (max 2MB)</small>
+                        <small class="text-muted ms-1">jpg/png/pdf (max 2MB)</small>
                     </div>
 
+                    {{-- CATATAN --}}
                     <div class="col-md-6">
-                        <label class="form-label">Catatan Header (opsional)</label>
+                        <label class="form-label fw-semibold">
+                            <i class="fa-regular fa-note-sticky me-1"></i> Catatan Header (opsional)
+                        </label>
                         <input type="text" name="note" class="form-control" value="{{ old('note') }}"
                             placeholder="Contoh: diantar langsung ke gudang">
                     </div>
@@ -73,24 +105,31 @@
 
                 <hr class="my-4">
 
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <h6 class="fw-semibold mb-0">Item Donasi</h6>
+                {{-- SECTION: ITEM DONASI --}}
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-2">
+                    <div>
+                        <div class="fw-semibold">
+                            <i class="fa-solid fa-boxes-stacked text-primary me-1"></i> Item Donasi
+                        </div>
+                        <small class="text-muted">Tambah item sesuai barang yang diterima.</small>
+                    </div>
+
                     <button type="button" class="btn btn-success btn-sm rounded-pill px-3" id="btnAddItem">
-                        + Tambah Item
+                        <i class="fa-solid fa-plus me-1"></i> Tambah Item
                     </button>
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table align-middle" id="itemsTable">
+                    <table class="table table-sm align-middle" id="itemsTable">
                         <thead class="table-light">
                             <tr>
                                 <th>Nama Item</th>
                                 <th>Kategori</th>
-                                <th>Qty</th>
-                                <th>Unit</th>
-                                <th>Kondisi</th>
-                                <th>Expired</th>
-                                <th class="text-end">Aksi</th>
+                                <th style="width:120px;">Qty</th>
+                                <th style="width:120px;">Unit</th>
+                                <th style="width:170px;">Kondisi</th>
+                                <th style="width:160px;">Expired</th>
+                                <th class="text-end" style="width:110px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -99,11 +138,13 @@
                             @foreach ($oldItems as $i => $it)
                                 <tr>
                                     <td>
-                                        <input class="form-control" name="items[{{ $i }}][item_name]"
+                                        <input class="form-control form-control-sm"
+                                            name="items[{{ $i }}][item_name]"
                                             value="{{ $it['item_name'] ?? '' }}" required>
                                     </td>
                                     <td>
-                                        <select class="form-select" name="items[{{ $i }}][category]" required>
+                                        <select class="form-select form-select-sm"
+                                            name="items[{{ $i }}][category]" required>
                                             <option value="pangan_kemasan" @selected(($it['category'] ?? '') === 'pangan_kemasan')>pangan_kemasan
                                             </option>
                                             <option value="pangan_segar" @selected(($it['category'] ?? '') === 'pangan_segar')>pangan_segar</option>
@@ -111,28 +152,31 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="number" step="0.01" min="0.01" class="form-control"
-                                            name="items[{{ $i }}][qty]" value="{{ $it['qty'] ?? 1 }}" required>
+                                        <input type="number" step="0.01" min="0.01"
+                                            class="form-control form-control-sm" name="items[{{ $i }}][qty]"
+                                            value="{{ $it['qty'] ?? 1 }}" required>
                                     </td>
                                     <td>
-                                        <input class="form-control" name="items[{{ $i }}][unit]"
-                                            value="{{ $it['unit'] ?? 'pcs' }}" required>
+                                        <input class="form-control form-control-sm"
+                                            name="items[{{ $i }}][unit]" value="{{ $it['unit'] ?? 'pcs' }}"
+                                            required>
                                     </td>
                                     <td>
-                                        <select class="form-select" name="items[{{ $i }}][condition]" required>
+                                        <select class="form-select form-select-sm"
+                                            name="items[{{ $i }}][condition]" required>
                                             <option value="baik" @selected(($it['condition'] ?? '') === 'baik')>baik</option>
                                             <option value="rusak_ringan" @selected(($it['condition'] ?? '') === 'rusak_ringan')>rusak_ringan</option>
                                             <option value="tidak_layak" @selected(($it['condition'] ?? '') === 'tidak_layak')>tidak_layak</option>
                                         </select>
                                     </td>
                                     <td>
-                                        <input type="date" class="form-control"
+                                        <input type="date" class="form-control form-control-sm"
                                             name="items[{{ $i }}][expired_at]"
                                             value="{{ $it['expired_at'] ?? '' }}">
                                     </td>
                                     <td class="text-end">
                                         <button type="button" class="btn btn-danger btn-sm rounded-pill px-3 btnRemove">
-                                            Hapus
+                                            <i class="fa-solid fa-trash me-1"></i> Hapus
                                         </button>
                                     </td>
                                 </tr>
@@ -141,9 +185,14 @@
                     </table>
                 </div>
 
-                <div class="mt-4 d-flex gap-2">
-                    <button class="btn btn-success rounded-pill px-4" type="submit">Simpan</button>
-                    <a href="{{ route('petugas.data-donasi') }}" class="btn btn-secondary rounded-pill px-4">Batal</a>
+                {{-- ACTION --}}
+                <div class="mt-4 d-flex flex-column flex-md-row gap-2">
+                    <button class="btn btn-success rounded-pill px-4" type="submit">
+                        <i class="fa-solid fa-floppy-disk me-1"></i> Simpan
+                    </button>
+                    <a href="{{ route('petugas.data-donasi') }}" class="btn btn-secondary rounded-pill px-4">
+                        Batal
+                    </a>
                 </div>
             </form>
 
@@ -171,26 +220,28 @@
             function newRow(index) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                <td><input class="form-control" name="items[${index}][item_name]" required></td>
+                <td><input class="form-control form-control-sm" name="items[${index}][item_name]" required></td>
                 <td>
-                    <select class="form-select" name="items[${index}][category]" required>
+                    <select class="form-select form-select-sm" name="items[${index}][category]" required>
                         <option value="pangan_kemasan">pangan_kemasan</option>
                         <option value="pangan_segar">pangan_segar</option>
                         <option value="non_pangan">non_pangan</option>
                     </select>
                 </td>
-                <td><input type="number" step="0.01" min="0.01" class="form-control" name="items[${index}][qty]" value="1" required></td>
-                <td><input class="form-control" name="items[${index}][unit]" value="pcs" required></td>
+                <td><input type="number" step="0.01" min="0.01" class="form-control form-control-sm" name="items[${index}][qty]" value="1" required></td>
+                <td><input class="form-control form-control-sm" name="items[${index}][unit]" value="pcs" required></td>
                 <td>
-                    <select class="form-select" name="items[${index}][condition]" required>
+                    <select class="form-select form-select-sm" name="items[${index}][condition]" required>
                         <option value="baik">baik</option>
                         <option value="rusak_ringan">rusak_ringan</option>
                         <option value="tidak_layak">tidak_layak</option>
                     </select>
                 </td>
-                <td><input type="date" class="form-control" name="items[${index}][expired_at]"></td>
+                <td><input type="date" class="form-control form-control-sm" name="items[${index}][expired_at]"></td>
                 <td class="text-end">
-                    <button type="button" class="btn btn-danger btn-sm rounded-pill px-3 btnRemove">Hapus</button>
+                    <button type="button" class="btn btn-danger btn-sm rounded-pill px-3 btnRemove">
+                        <i class="fa-solid fa-trash me-1"></i> Hapus
+                    </button>
                 </td>
             `;
                 return tr;
@@ -203,8 +254,8 @@
                 });
 
                 tableBody.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('btnRemove')) {
-                        e.target.closest('tr').remove();
+                    if (e.target.classList.contains('btnRemove') || e.target.closest('.btnRemove')) {
+                        (e.target.closest('tr')).remove();
                         if (tableBody.querySelectorAll('tr').length === 0) {
                             tableBody.appendChild(newRow(0));
                         }
@@ -266,7 +317,6 @@
                     clearTimeout(timer);
                     const q = donorInput.value.trim();
 
-                    // reset kalau input dihapus
                     if (q.length === 0) {
                         donorIdInput.value = '';
                         hideResults();
@@ -293,7 +343,6 @@
                     hideResults();
                 });
 
-                // klik di luar menutup dropdown hasil
                 document.addEventListener('click', (e) => {
                     if (!donorResults.contains(e.target) && e.target !== donorInput) {
                         hideResults();
@@ -302,6 +351,5 @@
             }
         })();
     </script>
-
 
 @endsection

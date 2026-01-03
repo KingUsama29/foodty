@@ -5,7 +5,29 @@
 @endsection
 
 @section('content')
+    @php
+        $status = $verification->verification_status ?? 'pending';
 
+        $badge = match ($status) {
+            'approved' => 'success',
+            'rejected' => 'danger',
+            default => 'warning',
+        };
+
+        $label = match ($status) {
+            'approved' => 'Disetujui',
+            'rejected' => 'Ditolak',
+            default => 'Pending',
+        };
+
+        $icon = match ($status) {
+            'approved' => 'fa-circle-check',
+            'rejected' => 'fa-circle-xmark',
+            default => 'fa-clock',
+        };
+    @endphp
+
+    {{-- HEADER --}}
     <div class="card shadow-sm mb-4">
         <div class="card-body d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
@@ -17,13 +39,21 @@
             </div>
 
             <a href="{{ route('petugas.data-penerima') }}" class="btn btn-secondary btn-sm rounded-pill px-3">
-                Kembali
+                <i class="fa-solid fa-arrow-left me-1"></i> Kembali
             </a>
         </div>
     </div>
 
     @if (session('success'))
-        <div class="alert alert-success shadow-sm">{{ session('success') }}</div>
+        <div class="alert alert-success shadow-sm">
+            <i class="fa-solid fa-circle-check me-1"></i> {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ session('error') }}
+        </div>
     @endif
 
     @if ($errors->any())
@@ -37,104 +67,146 @@
         </div>
     @endif
 
+    {{-- STATUS BAR --}}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="text-muted">
+            ID: <span class="fw-semibold">#{{ $verification->id }}</span>
+            · Diajukan: <span class="fw-semibold">{{ $verification->created_at?->format('d M Y, H:i') }}</span>
+        </div>
+
+        <span class="badge bg-{{ $badge }} rounded-pill px-3 py-2">
+            <i class="fa-solid {{ $icon }} me-1"></i> {{ $label }}
+        </span>
+    </div>
+
     <div class="row g-3">
+        {{-- DATA AKUN --}}
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
-                    <h6 class="fw-semibold mb-3">Data Akun (Users)</h6>
-
-                    <div class="mb-2"><span class="text-muted">Nama:</span> <span
-                            class="fw-semibold">{{ $verification->user->name }}</span></div>
-                    <div class="mb-2"><span class="text-muted">NIK:</span> {{ $verification->user->nik }}</div>
-                    <div class="mb-2"><span class="text-muted">Email:</span> {{ $verification->user->email }}</div>
-                    <div class="mb-2"><span class="text-muted">No. Telp:</span> {{ $verification->user->no_telp ?? '-' }}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="fw-semibold mb-0">
+                            <i class="fa-solid fa-user me-1 text-muted"></i> Data Akun (Users)
+                        </h6>
+                        @if ($verification->verified_at)
+                            <small class="text-muted">
+                                <i class="fa-regular fa-clock me-1"></i>
+                                {{ \Carbon\Carbon::parse($verification->verified_at)->format('d M Y, H:i') }}
+                            </small>
+                        @endif
                     </div>
-                    <div class="mb-2"><span class="text-muted">Alamat:</span> {{ $verification->user->alamat ?? '-' }}
-                    </div>
 
-                    <hr>
-
-                    <h6 class="fw-semibold mb-3">Status Verifikasi</h6>
-
-                    @php
-                        $status = $verification->verification_status;
-                        $badge = match ($status) {
-                            'approved' => 'success',
-                            'rejected' => 'danger',
-                            default => 'warning',
-                        };
-                        $label = match ($status) {
-                            'approved' => 'Disetujui',
-                            'rejected' => 'Ditolak',
-                            default => 'Pending',
-                        };
-                    @endphp
-
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="badge bg-{{ $badge }} rounded-pill px-3 py-2">{{ $label }}</span>
-                        <small class="text-muted">
-                            @if ($verification->verified_at)
-                                Diverifikasi: {{ $verification->verified_at }}
-                            @endif
-                        </small>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">Nama</span>
+                            <span class="fw-semibold">{{ $verification->user->name ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">NIK</span>
+                            <span class="fw-semibold">{{ $verification->user->nik ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">Email</span>
+                            <span class="fw-semibold">{{ $verification->user->email ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">No. Telp</span>
+                            <span class="fw-semibold">{{ $verification->user->no_telp ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0">
+                            <div class="text-muted mb-1">Alamat</div>
+                            <div class="fw-semibold">{{ $verification->user->alamat ?? '-' }}</div>
+                        </div>
                     </div>
 
                     @if ($verification->verification_status === 'rejected' && $verification->rejected_reason)
-                        <div class="mt-3">
-                            <div class="fw-semibold text-danger">Alasan ditolak:</div>
-                            <div class="text-muted">{{ $verification->rejected_reason }}</div>
+                        <div class="alert alert-danger mt-3 mb-0">
+                            <div class="fw-semibold mb-1">
+                                <i class="fa-solid fa-circle-xmark me-1"></i> Alasan ditolak
+                            </div>
+                            <div>{{ $verification->rejected_reason }}</div>
                         </div>
                     @endif
 
-                    <div class="mt-4 d-flex gap-2">
-                        @if ($verification->verification_status === 'pending')
+                    @if ($verification->verification_status === 'pending')
+                        <div class="mt-3 d-flex gap-2">
                             <button class="btn btn-success btn-sm rounded-pill px-3" data-bs-toggle="modal"
                                 data-bs-target="#accModal">
-                                Approve
+                                <i class="fa-solid fa-check me-1"></i> Approve
                             </button>
 
                             <button class="btn btn-danger btn-sm rounded-pill px-3" data-bs-toggle="modal"
                                 data-bs-target="#rejectModal">
-                                Reject
+                                <i class="fa-solid fa-xmark me-1"></i> Reject
                             </button>
-                        @endif
-                    </div>
-
-
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
 
+        {{-- DATA VERIF + DOKUMEN --}}
         <div class="col-lg-6">
-            <div class="card shadow-sm h-100">
+            <div class="card shadow-sm mb-3">
                 <div class="card-body">
-                    <h6 class="fw-semibold mb-3">Data Verifikasi (recipient_verifications)</h6>
+                    <h6 class="fw-semibold mb-3">
+                        <i class="fa-solid fa-clipboard-check me-1 text-muted"></i> Data Verifikasi
+                    </h6>
 
-                    <div class="mb-2"><span class="text-muted">Nama Lengkap:</span> <span
-                            class="fw-semibold">{{ $verification->full_name }}</span></div>
-                    <div class="mb-2"><span class="text-muted">No KK:</span> {{ $verification->kk_number }}</div>
-                    <div class="mb-2"><span class="text-muted">Alamat:</span> {{ $verification->alamat }}</div>
-                    <div class="mb-2"><span class="text-muted">Provinsi:</span> {{ $verification->province }}</div>
-                    <div class="mb-2"><span class="text-muted">Kota/Kab:</span> {{ $verification->city }}</div>
-                    <div class="mb-2"><span class="text-muted">Kecamatan:</span> {{ $verification->district }}</div>
-                    <div class="mb-2"><span class="text-muted">Kode Pos:</span> {{ $verification->postal_code }}</div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">Nama Lengkap</span>
+                            <span class="fw-semibold">{{ $verification->full_name ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">No KK</span>
+                            <span class="fw-semibold">{{ $verification->kk_number ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0">
+                            <div class="text-muted mb-1">Alamat</div>
+                            <div class="fw-semibold">{{ $verification->alamat ?? '-' }}</div>
+                        </div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">Provinsi</span>
+                            <span class="fw-semibold">{{ $verification->province ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">Kota/Kab</span>
+                            <span class="fw-semibold">{{ $verification->city ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">Kecamatan</span>
+                            <span class="fw-semibold">{{ $verification->district ?? '-' }}</span>
+                        </div>
+                        <div class="list-group-item px-0 d-flex justify-content-between">
+                            <span class="text-muted">Kode Pos</span>
+                            <span class="fw-semibold">{{ $verification->postal_code ?? '-' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <hr>
-
-                    <h6 class="fw-semibold mb-3">Dokumen (recipient_verification_documents)</h6>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h6 class="fw-semibold mb-3">
+                        <i class="fa-regular fa-folder-open me-1 text-muted"></i> Dokumen
+                    </h6>
 
                     @if ($verification->documents->count())
                         <div class="list-group">
                             @foreach ($verification->documents as $doc)
                                 <div class="list-group-item d-flex align-items-center justify-content-between">
                                     <div>
-                                        <div class="fw-semibold text-capitalize">{{ $doc->type }}</div>
+                                        <div class="fw-semibold text-capitalize">
+                                            <i class="fa-regular fa-file-lines me-1 text-muted"></i>
+                                            {{ $doc->type }}
+                                        </div>
                                         <small class="text-muted">{{ $doc->original_name }}</small>
                                     </div>
 
                                     <a class="btn btn-outline-primary btn-sm rounded-pill px-3"
                                         href="{{ asset('storage/' . $doc->file_path) }}" target="_blank">
-                                        Lihat
+                                        <i class="fa-solid fa-up-right-from-square me-1"></i> Lihat
                                     </a>
                                 </div>
                             @endforeach
@@ -142,7 +214,6 @@
                     @else
                         <div class="text-muted">Belum ada dokumen yang diupload.</div>
                     @endif
-
                 </div>
             </div>
         </div>
@@ -153,19 +224,19 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4">
                 <div class="modal-body text-center p-4">
-                    <p class="fw-semibold mb-4">
-                        Apakah anda yakin akan menyetujui verifikasi penerima ini?
-                    </p>
+                    <i class="fa-solid fa-circle-check fa-2xl text-success mb-3"></i>
+                    <p class="fw-semibold mb-4">Apakah Anda yakin akan menyetujui verifikasi penerima ini?</p>
 
+                    {{-- ROUTE ASLI PUNYAMU (GAK DIUBAH) --}}
                     <form method="POST" action="{{ route('penerima.approve', $verification->id) }}" class="d-inline">
                         @csrf
                         @method('PATCH')
-                        <button class="btn btn-success rounded-pill px-4">Ya</button>
+                        <button class="btn btn-success rounded-pill px-4">
+                            <i class="fa-solid fa-check me-1"></i> Ya
+                        </button>
                     </form>
 
-                    <button class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">
-                        Tidak
-                    </button>
+                    <button class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tidak</button>
                 </div>
             </div>
         </div>
@@ -176,10 +247,13 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4">
                 <div class="modal-body p-4">
-                    <p class="fw-semibold mb-3 text-center">
-                        Apakah anda yakin akan menolak verifikasi penerima ini?
-                    </p>
+                    <div class="text-center">
+                        <i class="fa-solid fa-circle-xmark fa-2xl text-danger mb-3"></i>
+                    </div>
 
+                    <p class="fw-semibold mb-3 text-center">Apakah Anda yakin akan menolak verifikasi penerima ini?</p>
+
+                    {{-- ROUTE ASLI PUNYAMU (GAK DIUBAH) --}}
                     <form method="POST" action="{{ route('penerima.reject', $verification->id) }}">
                         @csrf
                         @method('PATCH')
@@ -188,8 +262,10 @@
                         <textarea name="rejected_reason" class="form-control" rows="3"
                             placeholder="Contoh: Foto KTP tidak jelas / Data tidak sesuai" required>{{ old('rejected_reason') }}</textarea>
 
-                        <div class="mt-3 text-center">
-                            <button class="btn btn-danger rounded-pill px-4">Ya, Tolak</button>
+                        <div class="mt-3 text-center d-flex justify-content-center gap-2">
+                            <button class="btn btn-danger rounded-pill px-4">
+                                <i class="fa-solid fa-xmark me-1"></i> Ya, Tolak
+                            </button>
                             <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">
                                 Batal
                             </button>
@@ -200,5 +276,4 @@
             </div>
         </div>
     </div>
-
 @endsection
