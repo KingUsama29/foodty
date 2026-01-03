@@ -19,7 +19,11 @@ class RecipientVerification extends Model
         'district',
         'postal_code',
         'verification_status',
-        'verified_at',
+        'submitted_at' => 'datetime',
+        'reviewed_at' => 'datetime',
+        'cooldown_until' => 'datetime',
+        'verified_at' => 'datetime',
+        'rejected_reason',
     ];
 
     protected $casts = [

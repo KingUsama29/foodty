@@ -13,10 +13,19 @@ class RecipientVerificationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $user = $request->user();
+
+        [$allowed, $message, $last] = $this->canSubmitVerification($user);
+
+        if (!$allowed) {
+            return view('penerima.verifikasi_status', compact('message', 'last'));
+        }
+
         return view('penerima.pilihform');
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -33,20 +42,17 @@ class RecipientVerificationController extends Controller
     {
         $user = $request->user();
 
-        // 1) Cegah submit ulang kalau masih pending / sudah approved
-        $check = RecipientVerification::where('user_id', $user->id)->latest('id')->first();
+        $user = $request->user();
 
-        if ($check && in_array($check->verification_status, ['pending', 'approved'], true)) {
-            $message = $check->verification_status === 'pending'
-                ? 'Verifikasi kamu masih diproses admin. Tunggu dulu ya.'
-                : 'Akun kamu sudah terverifikasi. Tidak perlu verifikasi ulang.';
+        [$allowed, $message] = $this->canSubmitVerification($user);
 
+        if (!$allowed) {
             if ($request->expectsJson() || $request->is('api/*')) {
                 return response()->json(['message' => $message], 422);
             }
-
-            return redirect('/dashboard')->with('failed', $message);
+            return redirect()->route('verifikasi')->with('failed', $message);
         }
+
 
         // 2) Pastikan NIK ada di akun (diambil dari user login, bukan dari form)
         if (!$user->nik) {
@@ -171,5 +177,32 @@ class RecipientVerificationController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    private function canSubmitVerification($user): array
+    {
+        $last = $user->latestRecipientVerification; // butuh relasi di User.php
+
+        if (!$last) return [true, null, null];
+
+        if ($last->verification_status === 'pending') {
+            return [false, 'Verifikasi kamu masih diproses petugas. Tunggu dulu ya.', $last];
+        }
+
+        if ($last->verification_status === 'approved') {
+            return [false, 'Akun kamu sudah terverifikasi. Tidak perlu verifikasi ulang.', $last];
+        }
+
+        if ($last->verification_status === 'rejected') {
+            $cooldownUntil = $last->cooldown_until ?? $last->updated_at?->addHours(24);
+
+            if ($cooldownUntil && now()->lt($cooldownUntil)) {
+                return [false, 'Verifikasi ditolak. Kamu bisa ajukan ulang setelah ' . $cooldownUntil->format('d M Y, H:i') . '.', $last];
+            }
+
+            return [true, null, $last];
+        }
+
+        return [false, 'Status verifikasi tidak dikenali.', $last];
     }
 }

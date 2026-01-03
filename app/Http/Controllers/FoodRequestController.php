@@ -15,7 +15,7 @@ class FoodRequestController extends Controller
      */
     public function index()
     {
-        //
+        return view('penerima.pengajuan');
     }
 
     /**
@@ -31,38 +31,77 @@ class FoodRequestController extends Controller
      */
     public function store(Request $request)
     {
-        $validate = $request->validate([
-            'category'      => 'required|string',
-            'description'   => 'nullable|string',
-            'file_path'     => 'required|file|mimes:jpeg,jpg,png|max:2048',
+        $user = $request->user();
+
+        // (optional) kalau kamu mau validasi penerima harus approved sebelum submit, double safety
+        $status = $user?->latestRecipientVerification?->verification_status ?? 'pending';
+        if ($status !== 'approved') {
+            return back()->with('failed', 'Kamu harus verifikasi dulu sampai disetujui sebelum mengajukan bantuan.');
+        }
+
+        $validated = $request->validate([
+            'request_for' => 'required|in:self,other',
+            'category' => 'required|string|max:255',
+
+            'dependents' => 'nullable|integer|min:0',
+            'address_detail' => 'required|string',
+            'reason' => 'required|string',
+            'main_needs' => 'required|string|max:255',
+            'description' => 'nullable|string',
+
+            'recipient_name' => 'nullable|string|max:255',
+            'recipient_phone' => 'nullable|string|max:30',
+            'relationship' => 'nullable|string|max:255',
+
+            'file_path' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-        DB::beginTransaction();
 
-        try{
-            $path = $request->file('file_path')->store(
-                'food_requests/' . $request->user()->id,
-                'public'
-            );
+        // wajib isi data penerima kalau request_for = other
+        if ($validated['request_for'] === 'other') {
+            $request->validate([
+                'recipient_name' => 'required|string|max:255',
+                'recipient_phone' => 'required|string|max:30',
+                'relationship' => 'required|string|max:255',
+            ]);
+        } else {
+            // kalau self, kosongkan field other biar bersih
+            $validated['recipient_name'] = null;
+            $validated['recipient_phone'] = null;
+            $validated['relationship'] = null;
+        }
 
-            FoodRequest::create([
-                'user_id'       =>  $request->user()->id,
-                'category'      => $validate['category'],
-                'description'   => $validate['description'] ?? null,
-                'file_path'     => $path,
-                'status'        => 'pending',
+        try {
+            // simpan file
+            $path = $request->file('file_path')->store("food_requests/{$user->id}", 'public');
+
+            $foodRequest = FoodRequest::create([
+                'user_id' => $user->id,
+
+                'request_for' => $validated['request_for'],
+                'recipient_name' => $validated['recipient_name'],
+                'recipient_phone' => $validated['recipient_phone'],
+                'relationship' => $validated['relationship'],
+
+                'category' => $validated['category'],
+                'dependents' => $validated['dependents'] ?? null,
+
+                'address_detail' => $validated['address_detail'],
+                'reason' => $validated['reason'],
+                'main_needs' => $validated['main_needs'],
+                'description' => $validated['description'] ?? null,
+
+                'file_path' => $path,
+                'status' => 'pending',
             ]);
 
-            DB::commit();
-            return redirect('/dashboard')->with('success','Permintaan Berhasil Diajukan, Tunggu Persetujuan Dari Admin!');
-        }catch(\Throwable $e){
-            DB::rollBack();
-            Log::error('Food Request store failed', [
-                'user_id' => $request->user()->id,
+            return redirect()->back()->with('success', 'Pengajuan berhasil dikirim! Silakan tunggu review petugas.');
+        } catch (\Throwable $e) {
+            Log::error('FoodRequest store failed', [
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);
 
-            return back()->withInput()->with('failed', 'Terjadi Kesalahan Saat Menyimpan Data Pengajuan. Coba Lagi Ya.');
-
+            return back()->withInput()->with('failed', 'Terjadi kesalahan saat menyimpan pengajuan. Coba lagi ya.');
         }
     }
 

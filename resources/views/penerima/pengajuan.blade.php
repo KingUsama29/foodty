@@ -2,167 +2,284 @@
 
 {{-- ================= SIDEBAR MENU ================= --}}
 @section('sidebar-menu')
-
-    {{-- DASHBOARD --}}
-    <a href="{{ route('penerima.dashboard') }}"
-       class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-house fa-fw me-3"></i>
-        Dashboard
-    </a>
-
-    {{-- VERIFIKASI DATA --}}
-    <a href="/pilihform"
-       class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-user-check fa-fw me-3"></i>
-        Verifikasi Data
-    </a>
-
-    {{-- PENGAJUAN BANTUAN --}}
-    @if(auth()->check() && auth()->user()->verification_status === 'approved')
-
-        <a href="/pengajuan"
-           class="list-group-item list-group-item-action active d-flex align-items-center">
-            <i class="fa-solid fa-file-circle-plus fa-fw me-3"></i>
-            Pengajuan Bantuan
-        </a>
-
-    @else
-
-        <a href="/pilihform"
-           class="list-group-item list-group-item-action disabled d-flex align-items-center"
-           style="opacity:0.6; cursor:not-allowed;">
-            <i class="fa-solid fa-lock fa-fw me-3"></i>
-            Pengajuan Bantuan
-        </a>
-
-    @endif
-
-    {{-- RIWAYAT --}}
-    <a href="{{ route('penerima.riwayat') }}"
-       class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-clock-rotate-left fa-fw me-3"></i>
-        Riwayat
-    </a>
-
+    @php
+        $status = auth()->user()->latestRecipientVerification?->verification_status ?? 'pending';
+    @endphp
+    @include('partials.sidebar-penerima', ['active' => 'pengajuan'])
 @endsection
 
-
 @section('content')
+    @php
+        $user = auth()->user();
+        $status = $user?->latestRecipientVerification?->verification_status ?? 'pending';
+    @endphp
 
-{{-- ================= HEADER ================= --}}
-<div class="card shadow-sm mb-4">
-    <div class="card-body d-flex align-items-center gap-2">
-        <i class="fa-solid fa-file-circle-plus fa-lg text-primary"></i>
-        <div>
-            <h5 class="mb-1">Pengajuan Bantuan</h5>
-            <small class="text-muted">
-                Lengkapi data pengajuan bantuan
-            </small>
+    {{-- ================= HEADER ================= --}}
+    <div class="card shadow-sm mb-4">
+        <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center me-3"
+                    style="width:44px;height:44px;">
+                    <i class="fa-solid fa-file-circle-plus text-primary"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1">Pengajuan Bantuan</h5>
+                    <small class="text-muted">Lengkapi data pengajuan bantuan</small>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-{{-- ================= FORM AJUAN ================= --}}
-<div class="card shadow-lg border-0 w-100" style="border-radius:28px;">
-    <div class="card-body p-4 p-md-5">
+    @if (session('success'))
+        <div class="alert alert-success shadow-sm">
+            <i class="fa-solid fa-circle-check me-1"></i> {{ session('success') }}
+        </div>
+    @endif
 
-        {{-- JIKA BELUM LOGIN --}}
-        @if(!auth()->check())
-            <div class="alert alert-warning">
-                Silakan login terlebih dahulu untuk mengajukan bantuan.
+    @if (session('failed'))
+        <div class="alert alert-danger shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ session('failed') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger shadow-sm">
+            <div class="fw-semibold mb-1">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i> Gagal:
             </div>
-        @elseif(auth()->user()->verification_status !== 'approved')
-            <div class="alert alert-info">
-                Silakan lakukan <b>Verifikasi Data</b> terlebih dahulu.
-                Setelah disetujui, Anda dapat mengajukan bantuan.
-            </div>
-        @else
+            <ul class="mb-0">
+                @foreach ($errors->all() as $e)
+                    <li>{{ $e }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-            {{-- FORM --}}
-            <form method="POST" action="/pengajuan"
-                  enctype="multipart/form-data" class="row g-3">
-                @csrf
+    {{-- ================= FORM AJUAN ================= --}}
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4 p-md-5">
 
-                {{-- NIK --}}
-                <div class="col-12 col-md-6">
-                    <input type="text" name="nik"
-                           class="form-control rounded-pill shadow-sm"
-                           placeholder="NIK" required>
+            {{-- JIKA BELUM LOGIN --}}
+            @if (!auth()->check())
+                <div class="alert alert-warning mb-0">
+                    <i class="fa-solid fa-right-to-bracket me-1"></i>
+                    Silakan login terlebih dahulu untuk mengajukan bantuan.
                 </div>
 
-                {{-- NAMA --}}
-                <div class="col-12 col-md-6">
-                    <input type="text" name="nama"
-                           class="form-control rounded-pill shadow-sm"
-                           placeholder="Nama Pengguna" required>
+                {{-- JIKA BELUM APPROVED --}}
+            @elseif($status !== 'approved')
+                <div class="alert alert-info mb-0">
+                    <div class="fw-semibold mb-1">
+                        <i class="fa-solid fa-id-card me-1"></i> Verifikasi diperlukan
+                    </div>
+                    Silakan lakukan <b>Verifikasi Data</b> terlebih dahulu. Setelah disetujui, Anda dapat mengajukan
+                    bantuan.
+                    <div class="mt-3">
+                        <a href="{{ route('verifikasi') }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                            <i class="fa-solid fa-arrow-right me-1"></i> Ke Halaman Verifikasi
+                        </a>
+                    </div>
                 </div>
+            @else
+                <form method="POST" action="{{ route('penerima.pengajuan.store') }}" enctype="multipart/form-data"
+                    class="row g-4">
+                    @csrf
 
-                {{-- KATEGORI --}}
-                <div class="col-12">
-                    <select name="kategori"
-                            class="form-select rounded-pill shadow-sm"
-                            required>
-                        <option value="" selected disabled>Pilih Salah Satu</option>
-                        <option value="lansia">Lansia</option>
-                        <option value="ibu_balita">Ibu Bayi / Balita</option>
-                        <option value="bencana">Bencana Alam</option>
-                        <option value="kehilangan_pekerjaan">Kehilangan Pekerjaan</option>
-                        <option value="yatim_piatu">Yatim Piatu</option>
-                        <option value="tunawisma">Tunawisma</option>
-                    </select>
-                </div>
+                    {{-- SECTION: UNTUK SIAPA --}}
+                    <div class="col-12">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="fw-semibold">
+                                <i class="fa-solid fa-users me-1 text-primary"></i> Data Penerima Bantuan
+                            </div>
+                            <small class="text-muted">Pilih tujuan pengajuan</small>
+                        </div>
 
-                {{-- DESKRIPSI --}}
-                <div class="col-12">
-                    <textarea name="deskripsi" rows="4"
-                              class="form-control rounded-4 shadow-sm"
-                              placeholder="Deskripsi Pengajuan" required></textarea>
-                </div>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Pengajuan Untuk</label>
+                                <select name="request_for" id="request_for" class="form-select rounded-pill" required>
+                                    <option value="self" @selected(old('request_for', 'self') === 'self')>Diri sendiri</option>
+                                    <option value="other" @selected(old('request_for') === 'other')>Orang lain</option>
+                                </select>
+                                <small class="text-muted d-block mt-1">
+                                    Kalau kamu bantu orang lain, pilih “Orang lain”.
+                                </small>
+                            </div>
 
-                <div class="col-12">
-                    <hr class="my-4">
-                </div>
+                            {{-- DATA PENERIMA (DB: recipient_name, recipient_phone, relationship) --}}
+                            <div class="col-12" id="recipientFields" style="display:none;">
+                                <div class="border rounded-4 p-3 p-md-4 bg-light">
+                                    <div class="fw-semibold mb-3">
+                                        <i class="fa-solid fa-user-group me-1"></i> Data penerima (orang lain)
+                                    </div>
 
-                {{-- FOTO BUKTI --}}
-                <div class="col-12 col-md-6 mx-auto text-center">
-                    <label class="form-label fw-semibold">
-                        Foto Bukti Pendukung
-                    </label>
-                    <input type="file" name="foto_bukti"
-                           class="form-control" accept="image/*" required
-                           onchange="previewImage(this, 'previewBukti')">
-                    <img id="previewBukti"
-                         class="img-fluid rounded shadow-sm mt-3 d-none"
-                         style="max-height:220px;">
-                </div>
+                                    <div class="row g-3">
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label fw-semibold">Nama Penerima</label>
+                                            <input type="text" name="recipient_name" class="form-control rounded-pill"
+                                                value="{{ old('recipient_name') }}" placeholder="Nama lengkap penerima">
+                                        </div>
 
-                {{-- SUBMIT --}}
-                <div class="col-12 mt-4">
-                    <button type="submit"
-                            class="btn btn-primary w-100 rounded-pill fw-semibold py-2">
-                        Ajukan Bantuan
-                    </button>
-                </div>
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label fw-semibold">No. HP Penerima</label>
+                                            <input type="text" name="recipient_phone" class="form-control rounded-pill"
+                                                value="{{ old('recipient_phone') }}" placeholder="08xxxxxxxxxx">
+                                        </div>
 
-            </form>
-        @endif
+                                        <div class="col-12 col-md-6">
+                                            <label class="form-label fw-semibold">Hubungan Dengan Penerima</label>
+                                            <input type="text" name="relationship" class="form-control rounded-pill"
+                                                value="{{ old('relationship') }}"
+                                                placeholder="Contoh: saudara, tetangga, teman">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
+                    <hr class="my-1">
+
+                    {{-- SECTION: DATA PENGAJUAN --}}
+                    <div class="col-12">
+                        <div class="fw-semibold mb-2">
+                            <i class="fa-solid fa-file-pen me-1 text-primary"></i> Data Pengajuan
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Kategori Pengajuan</label>
+                                <select name="category" class="form-select rounded-pill" required>
+                                    <option value="" selected disabled>Pilih Kategori</option>
+                                    <option value="lansia" @selected(old('category') === 'lansia')>Lansia</option>
+                                    <option value="ibu_balita" @selected(old('category') === 'ibu_balita')>Ibu Bayi / Balita</option>
+                                    <option value="bencana" @selected(old('category') === 'bencana')>Bencana Alam</option>
+                                    <option value="kehilangan_pekerjaan" @selected(old('category') === 'kehilangan_pekerjaan')>Kehilangan Pekerjaan
+                                    </option>
+                                    <option value="yatim_piatu" @selected(old('category') === 'yatim_piatu')>Yatim Piatu</option>
+                                    <option value="tunawisma" @selected(old('category') === 'tunawisma')>Tunawisma</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Jumlah Tanggungan</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa-solid fa-people-group"></i>
+                                    </span>
+                                    <input type="number" min="0" name="dependents" class="form-control"
+                                        value="{{ old('dependents') }}" placeholder="contoh: 4">
+                                </div>
+                                <small class="text-muted">Boleh kosong kalau tidak ada.</small>
+                            </div>
+
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Kebutuhan Utama</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fa-solid fa-bowl-rice"></i>
+                                    </span>
+                                    <input type="text" name="main_needs" class="form-control"
+                                        value="{{ old('main_needs') }}"
+                                        placeholder="contoh: beras, susu bayi, lauk, sembako" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- SECTION: ALAMAT & ALASAN --}}
+                    <div class="col-12">
+                        <div class="fw-semibold mb-2">
+                            <i class="fa-solid fa-location-dot me-1 text-primary"></i> Alamat & Alasan
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Alamat Lengkap + Patokan</label>
+                                <textarea name="address_detail" class="form-control rounded-4" rows="3"
+                                    placeholder="Contoh: Jl. Mawar RT 02, dekat pos ronda / warung..." required>{{ old('address_detail') }}</textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Alasan Pengajuan</label>
+                                <textarea name="reason" class="form-control rounded-4" rows="4"
+                                    placeholder="Jelaskan kondisi saat ini (misal: sakit, korban bencana, dll)" required>{{ old('reason') }}</textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Deskripsi (opsional)</label>
+                                <textarea name="description" class="form-control rounded-4" rows="3"
+                                    placeholder="Boleh kosong. Tambahkan info lain kalau perlu...">{{ old('description') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- SECTION: BUKTI --}}
+                    <div class="col-12">
+                        <div class="fw-semibold mb-2">
+                            <i class="fa-regular fa-image me-1 text-primary"></i> Bukti Pendukung
+                        </div>
+
+                        <div class="border rounded-4 p-3 p-md-4 bg-light">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-12 col-md-7">
+                                    <label class="form-label fw-semibold">Upload Bukti (1 file)</label>
+                                    <input type="file" name="file_path" class="form-control" accept="image/*"
+                                        required onchange="previewImage(this, 'previewBukti')">
+                                    <small class="text-muted d-block mt-2">
+                                        1 file saja (jpg/png/jpeg). Kalau banyak, gabungkan jadi 1 foto/kolase.
+                                    </small>
+                                </div>
+
+                                <div class="col-12 col-md-5 text-center">
+                                    <img id="previewBukti" class="img-fluid rounded shadow-sm d-none"
+                                        style="max-height:180px;" alt="Preview Bukti">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- SUBMIT --}}
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill fw-semibold py-2">
+                            <i class="fa-solid fa-paper-plane me-1"></i> Ajukan Bantuan
+                        </button>
+                    </div>
+
+                </form>
+            @endif
+
+        </div>
     </div>
-</div>
 
-{{-- ================= JS PREVIEW ================= --}}
-<script>
-    function previewImage(input, previewId) {
-        const preview = document.getElementById(previewId);
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                preview.src = e.target.result;
-                preview.classList.remove('d-none');
-            };
-            reader.readAsDataURL(input.files[0]);
+    {{-- ================= JS ================= --}}
+    <script>
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            if (!preview) return;
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
-    }
-</script>
 
+        function toggleRecipientFields() {
+            const select = document.getElementById('request_for');
+            const wrap = document.getElementById('recipientFields');
+            if (!select || !wrap) return;
+
+            const isOther = select.value === 'other';
+            wrap.style.display = isOther ? 'block' : 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleRecipientFields();
+            document.getElementById('request_for')?.addEventListener('change', toggleRecipientFields);
+        });
+    </script>
 @endsection

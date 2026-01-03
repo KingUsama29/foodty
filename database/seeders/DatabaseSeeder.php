@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             PetugasProfileSeeder::class,
             DonorSeeder::class,
             DonationSeeder::class,
+            RecipientVerificationSeeder::class,
         ]);
     }
 }

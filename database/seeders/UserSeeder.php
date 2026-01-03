@@ -42,7 +42,7 @@ class UserSeeder extends Seeder
             'email' => 'user1@donasipangan.test',
             'no_telp' => '083333333333',
             'alamat' => 'Balikpapan',
-            'role' => 'user',
+            'role' => 'donatur',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
         ]);
@@ -53,7 +53,7 @@ class UserSeeder extends Seeder
             'email' => 'user2@donasipangan.test',
             'no_telp' => '084444444444',
             'alamat' => 'Samarinda',
-            'role' => 'user',
+            'role' => 'penerima',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
         ]);
