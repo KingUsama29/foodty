@@ -1,90 +1,191 @@
 @extends('layouts.dashboard')
 
-{{-- ================= SIDEBAR MENU ADMIN ================= --}}
 @section('sidebar-menu')
     <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-house fa-fw me-3"></i>
-        Dashboard
+        <i class="fa-solid fa-house fa-fw me-3" style="color:#6c757d;"></i> Dashboard
     </a>
 
     <a href="{{ route('admin.pengajuan') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-file-circle-check fa-fw me-3"></i>
-        Ajuan Bantuan
+        <i class="fa-solid fa-file-circle-check fa-fw me-3" style="color:#6c757d;"></i> Ajuan Bantuan
     </a>
 
     <a href="{{ route('admin.petugas') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-users-gear fa-fw me-3"></i>
-        Data Petugas
+        <i class="fa-solid fa-users-gear fa-fw me-3" style="color:#6c757d;"></i> Data Petugas
     </a>
 
     <a href="{{ route('admin.cabang') }}" class="list-group-item list-group-item-action active d-flex align-items-center">
-        <i class="fa-solid fa-location-dot fa-fw me-3"></i>
-        Cabang Lokasi
+        <i class="fa-solid fa-location-dot fa-fw me-3" style="color:#6c757d;"></i> Cabang Lokasi
     </a>
 
     <a href="{{ route('admin.stok') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-boxes-stacked fa-fw me-3"></i>
-        Stok Barang
+        <i class="fa-solid fa-boxes-stacked fa-fw me-3" style="color:#6c757d;"></i> Stok Barang
     </a>
 
     <a href="{{ route('admin.penyaluran') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-chart-pie fa-fw me-3"></i>
-        Hasil Penyaluran
+        <i class="fa-solid fa-chart-pie fa-fw me-3" style="color:#6c757d;"></i> Hasil Penyaluran
     </a>
 @endsection
 
-
-{{-- ================= KONTEN CABANG LOKASI ================= --}}
 @section('content')
+    @php $q = $q ?? request('q'); @endphp
 
-{{-- HEADER (LOGO + JUDUL, KONSISTEN) --}}
-<div class="card shadow-sm mb-4">
-    <div class="card-body d-flex align-items-center">
-        <i class="fa-solid fa-location-dot fa-lg text-primary me-3"></i>
-        <div>
-            <h5 class="mb-1">Cabang Lokasi</h5>
-            <small class="text-muted">
-                Informasi cabang penyaluran bantuan
-            </small>
+    {{-- HEADER --}}
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-primary-subtle d-flex align-items-center justify-content-center me-3"
+                    style="width:44px;height:44px;">
+                    <i class="fa-solid fa-location-dot" style="color:#0d6efd;"></i>
+                </div>
+                <div>
+                    <h5 class="mb-1">Cabang Lokasi</h5>
+                    <small class="text-muted">Kelola data cabang penyaluran bantuan (CRUD)</small>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <form method="GET" class="d-flex gap-2">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white">
+                            <i class="fa-solid fa-magnifying-glass" style="color:#6c757d;"></i>
+                        </span>
+                        <input type="text" name="q" value="{{ $q }}" class="form-control"
+                            placeholder="Cari nama cabang / alamat...">
+                    </div>
+                    <button class="btn btn-primary btn-sm rounded-pill px-3">Cari</button>
+                </form>
+
+                <a href="{{ route('admin.cabang.create') }}" class="btn btn-success btn-sm rounded-pill px-3">
+                    <i class="fa-solid fa-plus me-1" style="color:#fff;"></i> Tambah
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
-{{-- TABEL CABANG --}}
-<div class="card shadow-sm">
-    <div class="card-body p-0">
-        <table class="table mb-0 align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Cabang</th>
-                    <th>Total Petugas</th>
-                    <th>Menangani</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Medan</td>
-                    <td>46</td>
-                    <td>31 Daerah</td>
-                </tr>
-                <tr>
-                    <td>Yogyakarta</td>
-                    <td>32</td>
-                    <td>17 Daerah</td>
-                </tr>
-                <tr>
-                    <td>Jakarta</td>
-                    <td>41</td>
-                    <td>24 Daerah</td>
-                </tr>
-                <tr>
-                    <td>Padang</td>
-                    <td>43</td>
-                    <td>34 Daerah</td>
-                </tr>
-            </tbody>
-        </table>
+    @if (session('success'))
+        <div class="alert alert-success shadow-sm border-0 rounded-4">
+            <i class="fa-solid fa-circle-check me-1" style="color:#198754;"></i> {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- TABLE --}}
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cabang</th>
+                            <th>Alamat</th>
+                            <th>Status</th>
+                            <th class="text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($cabangs as $c)
+                            @php
+                                $active = (bool) $c->is_active;
+                                $badge = $active ? 'success' : 'secondary';
+                                $text = $active ? 'Aktif' : 'Nonaktif';
+                                $icon = $active ? 'fa-circle-check' : 'fa-circle-minus';
+                            @endphp
+
+                            <tr>
+                                <td style="min-width:200px;">
+                                    <div class="fw-semibold">{{ $c->name }}</div>
+                                    <small class="text-muted">ID: {{ $c->id }}</small>
+                                </td>
+
+                                <td style="min-width:260px;">
+                                    <div class="text-muted">
+                                        <i class="fa-solid fa-location-crosshairs me-1" style="color:#6c757d;"></i>
+                                        {{ $c->alamat }}
+                                    </div>
+                                </td>
+
+                                <td style="min-width:160px;">
+                                    <span class="badge bg-{{ $badge }} rounded-pill px-3 py-2">
+                                        <i class="fa-solid {{ $icon }} me-1" style="color:#fff;"></i>
+                                        {{ $text }}
+                                    </span>
+                                </td>
+
+                                <td class="text-end" style="min-width:320px;">
+                                    <div class="d-inline-flex gap-2">
+                                        {{-- TOGGLE STATUS --}}
+                                        <form method="POST" action="{{ route('admin.cabang.toggle-status', $c->id) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                                <i class="fa-solid fa-toggle-on me-1" style="color:#0d6efd;"></i>
+                                                Toggle
+                                            </button>
+                                        </form>
+
+                                        {{-- EDIT --}}
+                                        <a href="{{ route('admin.cabang.edit', $c->id) }}"
+                                            class="btn btn-info btn-sm rounded-pill px-3 text-white">
+                                            <i class="fa-solid fa-pen-to-square me-1" style="color:#fff;"></i> Edit
+                                        </a>
+
+                                        {{-- HAPUS --}}
+                                        <button class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                            data-bs-toggle="modal" data-bs-target="#del{{ $c->id }}">
+                                            <i class="fa-solid fa-trash me-1" style="color:#dc3545;"></i> Hapus
+                                        </button>
+                                    </div>
+
+                                    {{-- MODAL DELETE --}}
+                                    <div class="modal fade" id="del{{ $c->id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4">
+                                                <div class="modal-body p-4">
+                                                    <div class="text-center">
+                                                        <i
+                                                            class="fa-solid fa-triangle-exclamation fa-2xl text-danger mb-3"></i>
+                                                        <div class="fw-semibold mb-1">Hapus cabang ini?</div>
+                                                        <div class="text-muted mb-3" style="font-size:14px;">
+                                                            Aksi ini tidak bisa dibatalkan.
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center gap-2">
+                                                        <form method="POST"
+                                                            action="{{ route('admin.cabang.destroy', $c->id) }}">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button class="btn btn-danger rounded-pill px-4">
+                                                                <i class="fa-solid fa-trash me-1" style="color:#fff;"></i>
+                                                                Ya, Hapus
+                                                            </button>
+                                                        </form>
+                                                        <button class="btn btn-secondary rounded-pill px-4"
+                                                            data-bs-dismiss="modal">
+                                                            Batal
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4">
+                                    <i class="fa-regular fa-folder-open me-1" style="color:#6c757d;"></i> Belum ada data
+                                    cabang.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-3">
+                {{ $cabangs->links() }}
+            </div>
+        </div>
     </div>
-</div>
-
 @endsection
