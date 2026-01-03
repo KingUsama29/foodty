@@ -2,25 +2,7 @@
 
 {{-- ================= SIDEBAR MENU PETUGAS ================= --}}
 @section('sidebar-menu')
-    <a href="#" class="list-group-item list-group-item-action active d-flex align-items-center">
-        <i class="fa-solid fa-house fa-fw me-3"></i>
-        Dashboard
-    </a>
-
-    <a href="{{ route('petugas.data-penerima') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-list-check fa-fw me-3"></i>
-        Data Penerima
-    </a>
-
-    <a href="{{ route('petugas.data-donasi') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-list-check fa-fw me-3"></i>
-        Data Donasi
-    </a>
-
-    <a href="{{ route('petugas.profil-petugas') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-id-badge fa-fw me-3"></i>
-        Profil Petugas
-    </a>
+    @include('partials.sidebar-petugas', ['active' => 'dashboard'])
 @endsection
 
 

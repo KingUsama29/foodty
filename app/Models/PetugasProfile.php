@@ -20,4 +20,10 @@ class PetugasProfile extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+    public function cabang()
+    {
+        return $this->belongsTo(\App\Models\Cabang::class, 'cabang_id');
+    }
+
 }

@@ -1,11 +1,29 @@
 <aside class="sidebar d-none d-lg-flex flex-column border-end">
 
     {{-- PROFILE --}}
-    <div class="p-3 border-bottom text-center">
-        <i class="fa-solid fa-circle-user fa-3x profile-icon mb-2"></i>
+    <div class="p-3 border-bottom text-center" style="margin-top: 70px;">
+        @php
+            $user = auth()->user();
+            $photo = $user?->petugas?->file_path ? asset('storage/' . $user->petugas->file_path) : null;
+        @endphp
+
+        {{-- FOTO PROFIL --}}
+        @if ($photo)
+            <img src="{{ $photo }}" alt="Foto Profil" class="rounded-circle shadow-sm mb-2"
+                style="width:90px;height:90px;object-fit:cover;">
+        @else
+            <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center shadow-sm mb-2"
+                style="width:90px;height:90px;">
+                <span class="fw-bold text-muted" style="font-size:28px;">
+                    {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                </span>
+            </div>
+        @endif
+
+        {{-- NAMA & ROLE --}}
         <div class="fw-semibold">Selamat Datang</div>
-        <div class="fw-bold">[User]</div>
-        <small class="text-muted">[Role]</small>
+        <div class="fw-bold">{{ $user->name ?? '-' }}</div>
+        <small class="text-muted text-capitalize">{{ $user->role ?? '-' }}</small>
     </div>
 
     {{-- MENU --}}
