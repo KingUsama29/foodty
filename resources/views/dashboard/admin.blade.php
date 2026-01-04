@@ -22,7 +22,7 @@
         Cabang Lokasi
     </a>
 
-    <a href="{{ route('admin.stok') }}" class="list-group-item list-group-item-action d-flex align-items-center">
+    <a href="{{ route('admin.stok-barang') }}" class="list-group-item list-group-item-action d-flex align-items-center">
         <i class="fa-solid fa-boxes-stacked fa-fw me-3"></i>
         Stok Barang
     </a>
@@ -47,7 +47,7 @@
             </div>
         </div>
     </div>
-    
+
 
     <div class="row g-3">
 

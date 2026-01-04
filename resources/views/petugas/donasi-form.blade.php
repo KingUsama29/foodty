@@ -138,12 +138,17 @@
                             @foreach ($oldItems as $i => $it)
                                 <tr>
                                     <td>
-                                        <input class="form-control form-control-sm"
-                                            name="items[{{ $i }}][item_name]"
-                                            value="{{ $it['item_name'] ?? '' }}" required>
+                                        <div class="position-relative">
+                                            <input class="form-control form-control-sm item-name"
+                                                name="items[{{ $i }}][item_name]"
+                                                value="{{ $it['item_name'] ?? '' }}" autocomplete="off" required>
+                                            <div class="suggestion-box list-group position-absolute w-100 shadow-sm"
+                                                style="z-index:9999; display:none; max-height:220px; overflow:auto;"></div>
+                                        </div>
                                     </td>
+
                                     <td>
-                                        <select class="form-select form-select-sm"
+                                        <select class="form-select form-select-sm item-category"
                                             name="items[{{ $i }}][category]" required>
                                             <option value="pangan_kemasan" @selected(($it['category'] ?? '') === 'pangan_kemasan')>pangan_kemasan
                                             </option>
@@ -199,6 +204,24 @@
         </div>
     </div>
 
+    <style>
+        /* Fix autocomplete kepotong di table */
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+        /* Biar suggestion tampil rapi */
+        .suggestion-box {
+            background: #fff;
+            border-radius: .5rem;
+        }
+
+        /* Optional: hover effect */
+        .suggestion-box .list-group-item:hover {
+            background-color: #f1f5f9;
+        }
+    </style>
+
     <script>
         (function() {
             /* =========================
@@ -220,9 +243,15 @@
             function newRow(index) {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                <td><input class="form-control form-control-sm" name="items[${index}][item_name]" required></td>
                 <td>
-                    <select class="form-select form-select-sm" name="items[${index}][category]" required>
+                    <div class="position-relative">
+                        <input class="form-control form-control-sm item-name" name="items[${index}][item_name]" autocomplete="off" required>
+                        <div class="suggestion-box list-group position-absolute w-100 shadow-sm"
+                            style="z-index:9999; display:none; max-height:220px; overflow:auto;"></div>
+                    </div>
+                </td>
+                <td>
+                    <select class="form-select form-select-sm item-category" name="items[${index}][category]" required>
                         <option value="pangan_kemasan">pangan_kemasan</option>
                         <option value="pangan_segar">pangan_segar</option>
                         <option value="non_pangan">non_pangan</option>
@@ -349,6 +378,112 @@
                     }
                 });
             }
+
+            /* =========================
+             * C) AUTOCOMPLETE ITEM NAME
+             * ========================= */
+            const suggestEndpoint = @json(route('petugas.donasi.item-suggest'));
+
+            function debounce(fn, delay = 200) {
+                let t;
+                return (...args) => {
+                    clearTimeout(t);
+                    t = setTimeout(() => fn(...args), delay);
+                };
+            }
+
+            function closeBox(box) {
+                if (!box) return;
+                box.style.display = 'none';
+                box.innerHTML = '';
+            }
+
+            async function fetchSuggest(q, category) {
+                const url = new URL(suggestEndpoint, window.location.origin);
+                url.searchParams.set('q', q);
+                if (category) url.searchParams.set('category', category);
+
+                const res = await fetch(url.toString(), {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                if (!res.ok) return [];
+                return await res.json();
+            }
+
+            function renderBox(box, input, items) {
+                box.innerHTML = '';
+                if (!items.length) return closeBox(box);
+
+                items.forEach(it => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'list-group-item list-group-item-action';
+                    btn.textContent = it.label;
+
+                    btn.addEventListener('click', () => {
+                        input.value = it.value;
+                        closeBox(box);
+                        input.dispatchEvent(new Event('change'));
+                    });
+
+                    box.appendChild(btn);
+                });
+
+                box.style.display = 'block';
+            }
+
+            // typing in item name
+            document.addEventListener('input', debounce(async (e) => {
+                const input = e.target.closest('.item-name');
+                if (!input) return;
+
+                const wrapper = input.closest('.position-relative');
+                const box = wrapper?.querySelector('.suggestion-box');
+                if (!box) return;
+
+                const q = input.value.trim();
+                if (q.length < 2) return closeBox(box);
+
+                const row = input.closest('tr');
+                const categoryEl = row?.querySelector('.item-category');
+                const category = categoryEl ? categoryEl.value : '';
+
+                const items = await fetchSuggest(q, category);
+                renderBox(box, input, items);
+            }, 200));
+
+            // when category changed: close box + optional refresh suggestions
+            document.addEventListener('change', (e) => {
+                const sel = e.target.closest('.item-category');
+                if (!sel) return;
+
+                const row = sel.closest('tr');
+                const input = row?.querySelector('.item-name');
+                const box = row?.querySelector('.suggestion-box');
+                closeBox(box);
+
+                if (input && input.value.trim().length >= 2) {
+                    input.dispatchEvent(new Event('input'));
+                }
+            });
+
+            // close on click outside
+            document.addEventListener('click', (e) => {
+                document.querySelectorAll('.suggestion-box').forEach(box => {
+                    const wrapper = box.closest('.position-relative');
+                    if (wrapper && !wrapper.contains(e.target)) closeBox(box);
+                });
+            });
+
+            // close on esc
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.suggestion-box').forEach(closeBox);
+                }
+            });
+
         })();
     </script>
 

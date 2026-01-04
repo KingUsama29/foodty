@@ -38,6 +38,19 @@
         <span>Data Pengajuan</span>
     </a>
 
+    <a href="{{ route('petugas.penyaluran.requests') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ activeRoute('petugas.penyaluran.requests') }}">
+        <i class="fa-solid fa-list-check fa-fw me-3" style="color:#6c757d;"></i>
+        Pengajuan Siap Disalurkan
+    </a>
+
+    <a href="{{ route('petugas.data-penyaluran') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 {{ activeRoute('petugas.data-penyaluran') }}">
+        <i class="fa-solid fa-file-circle-plus fa-fw"></i>
+        <span>Riwayat Penyaluran</span>
+    </a>
+
+
     <a href="{{ route('petugas.profil-petugas') }}"
         class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 {{ activeRoute('petugas.profil-petugas') }}">
         <i class="fa-solid fa-id-badge fa-fw"></i>

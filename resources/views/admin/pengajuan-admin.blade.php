@@ -2,35 +2,7 @@
 @extends('layouts.dashboard')
 
 @section('sidebar-menu')
-    <a href="{{ route('admin.dashboard') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-house fa-fw me-3" style="color:#6c757d;"></i>
-        Dashboard
-    </a>
-
-    <a href="{{ route('admin.pengajuan') }}" class="list-group-item list-group-item-action active d-flex align-items-center">
-        <i class="fa-solid fa-file-circle-check fa-fw me-3" style="color:#6c757d;"></i>
-        Ajuan Bantuan
-    </a>
-
-    <a href="{{ route('admin.petugas') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-users-gear fa-fw me-3" style="color:#6c757d;"></i>
-        Data Petugas
-    </a>
-
-    <a href="{{ route('admin.cabang') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-location-dot fa-fw me-3" style="color:#6c757d;"></i>
-        Cabang Lokasi
-    </a>
-
-    <a href="{{ route('admin.stok') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-boxes-stacked fa-fw me-3" style="color:#6c757d;"></i>
-        Stok Barang
-    </a>
-
-    <a href="{{ route('admin.penyaluran') }}" class="list-group-item list-group-item-action d-flex align-items-center">
-        <i class="fa-solid fa-chart-pie fa-fw me-3" style="color:#6c757d;"></i>
-        Hasil Penyaluran
-    </a>
+    @include('partials.sidebar-admin', ['active' => 'pengajuan'])
 @endsection
 
 @section('content')
@@ -228,8 +200,8 @@
                                         </a>
 
                                         @if ($isPending)
-                                            <button class="btn btn-success btn-sm rounded-pill px-3"
-                                                data-bs-toggle="modal" data-bs-target="#acc{{ $r->id }}">
+                                            <button class="btn btn-success btn-sm rounded-pill px-3" data-bs-toggle="modal"
+                                                data-bs-target="#acc{{ $r->id }}">
                                                 <i class="fa-solid fa-check me-1" style="color:#fff;"></i> ACC
                                             </button>
 
