@@ -33,7 +33,7 @@
             <span>Cabang Lokasi</span>
         </a>
 
-        <a href="{{ route('admin.stok') }}"
+        <a href="{{ route('admin.stok-barang') }}"
             class="list-group-item list-group-item-action d-flex align-items-center gap-3 py-3 {{ isActive('stok', $active) }}">
             <i class="fa-solid fa-boxes-stacked fa-fw"></i>
             <span>Stok Barang</span>
