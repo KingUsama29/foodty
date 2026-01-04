@@ -22,7 +22,6 @@ class PenyaluranController extends Controller
                 $qr->whereHas('request.user', fn($u) => $u->where('name', 'like', "%{$q}%"))
                     ->orWhere('id', $q);
             })
-            ->latest('distributed_at')
             ->latest('id')
             ->paginate(10)
             ->withQueryString();
@@ -37,7 +36,6 @@ class PenyaluranController extends Controller
 
         if (!$cabangId) abort(403, 'Petugas belum memiliki cabang.');
 
-        // ✅ HANYA tampilkan food request approved yang BELUM pernah disalurkan (completed)
         $requests = FoodRequest::with('user')
             ->where('status', 'approved')
             ->whereDoesntHave('distributions', function ($q) {
@@ -54,7 +52,6 @@ class PenyaluranController extends Controller
             ->get();
 
         $selectedRequest = null;
-
         if ($request->filled('food_request_id')) {
             $selectedRequest = FoodRequest::with('user')
                 ->where('status', 'approved')
@@ -69,7 +66,6 @@ class PenyaluranController extends Controller
         $q = WarehouseStock::where('cabang_id', $cabangId)
             ->where('warehouse_item_id', $wid);
 
-        // penting: NULL harus whereNull, string kosong juga dianggap null
         if ($expiredAt === null || $expiredAt === '') {
             $q->whereNull('expired_at');
         } else {
@@ -83,7 +79,7 @@ class PenyaluranController extends Controller
     {
         $request->validate([
             'food_request_id' => 'required|exists:food_requests,id',
-            'scheduled_at'    => 'required|date', // ✅ jadwal pengiriman
+            'scheduled_at'    => 'required|date', // jadwal pengantaran WAJIB biar jelas untuk penerima
             'note'            => 'nullable|string|max:500',
 
             'items' => 'required|array|min:1',
@@ -96,6 +92,7 @@ class PenyaluranController extends Controller
 
         $petugasProfile = auth()->user()->petugas;
         $cabangId = $petugasProfile?->cabang_id;
+
         if (!$cabangId) {
             return back()->withInput()->with('error', 'Petugas belum punya cabang.');
         }
@@ -106,26 +103,29 @@ class PenyaluranController extends Controller
             return back()->withInput()->with('error', 'Food request harus approved untuk bisa disalurkan.');
         }
 
-        // ✅ TAMENG BACKEND: jangan boleh disalurkan kalau sudah pernah completed
         $alreadyDistributed = $foodRequest->distributions()
             ->whereIn('status', ['completed'])
             ->exists();
 
         if ($alreadyDistributed) {
-            return back()
-                ->withInput()
-                ->with('error', 'Pengajuan ini sudah pernah disalurkan, tidak bisa disalurkan lagi.');
+            return back()->withInput()->with('error', 'Pengajuan ini sudah pernah disalurkan, tidak bisa disalurkan lagi.');
         }
 
         try {
             DB::transaction(function () use ($request, $cabangId, $foodRequest) {
+
+                // ✅ saat dibuat: statusnya DIJADWALKAN, belum selesai disalurkan
                 $dist = Distribution::create([
                     'food_request_id' => $foodRequest->id,
                     'cabang_id'       => $cabangId,
                     'distributed_by'  => auth()->id(),
-                    'distributed_at'  => now(),
-                    'scheduled_at'    => $request->scheduled_at, // ✅ simpan jadwal
-                    'status'          => 'completed',
+
+                    'scheduled_at'    => $request->scheduled_at, // jadwal antar
+                    'status'          => 'scheduled',
+
+                    // distributed_at = waktu selesai, jadi NULL dulu
+                    'distributed_at'  => null,
+
                     'note'            => $request->note,
 
                     'recipient_name'    => $foodRequest->user?->name,
@@ -139,9 +139,7 @@ class PenyaluranController extends Controller
                     $qty = (float) $it['qty'];
                     $unit = strtolower(trim($it['unit']));
 
-                    // ✅ pastikan query expired null vs date konsisten
                     $stockQ = $this->stockQuery($cabangId, $wid, $expiredAt);
-
                     $stock = $stockQ->lockForUpdate()->first();
 
                     if (!$stock) {
@@ -166,11 +164,12 @@ class PenyaluranController extends Controller
                     $dist->items()->create([
                         'warehouse_item_id' => $wid,
                         'expired_at'        => ($expiredAt === '' ? null : $expiredAt),
-                        'qty'              => $qty,
-                        'unit'             => $unit,
-                        'note'             => $it['note'] ?? null,
+                        'qty'               => $qty,
+                        'unit'              => $unit,
+                        'note'              => $it['note'] ?? null,
                     ]);
 
+                    // ✅ stok langsung berkurang saat dibuat penyaluran (biar stok cabang real-time)
                     $stock->update(['qty' => (float) $stock->qty - $qty]);
 
                     WarehouseMovement::create([
@@ -183,18 +182,46 @@ class PenyaluranController extends Controller
                         'qty'               => $qty,
                         'unit'              => $unit,
                         'created_by'        => auth()->id(),
-                        'note'              => "Penyaluran untuk food_request_id={$foodRequest->id}",
+                        'note'              => "Penyaluran (DIJADWALKAN) untuk food_request_id={$foodRequest->id}",
                         'moved_at'          => now(),
                     ]);
                 }
             });
         } catch (ValidationException $e) {
-            // ✅ balik ke form dengan pesan yang enak
             throw $e;
         }
 
         return redirect()->route('petugas.data-penyaluran')
-            ->with('success', 'Penyaluran berhasil disimpan, stok gudang berkurang, dan jadwal pengiriman tersimpan.');
+            ->with('success', 'Penyaluran dibuat. Status: Dijadwalkan. Stok gudang sudah dikurangi.');
+    }
+
+    // ✅ tombol "Mulai antar / OTW"
+    public function markOnDelivery(Distribution $distribution)
+    {
+        if (!in_array($distribution->status, ['scheduled'])) {
+            return back()->with('error', 'Status harus Dijadwalkan dulu untuk mulai pengantaran.');
+        }
+
+        $distribution->update([
+            'status' => 'on_delivery',
+        ]);
+
+        return back()->with('success', 'Status diubah: Dalam Pengantaran.');
+    }
+
+    // ✅ tombol "Selesai disalurkan"
+    public function markCompleted(Distribution $distribution)
+    {
+        if (!in_array($distribution->status, ['scheduled', 'on_delivery'])) {
+            return back()->with('error', 'Status harus Dijadwalkan / Dalam Pengantaran dulu.');
+        }
+
+        $distribution->update([
+            'status'         => 'completed',
+            'distributed_at' => now(),
+        ]);
+
+        return back()->with('success', 'Status diubah: Sudah Disalurkan.');
     }
 
     public function show(Distribution $distribution)
@@ -209,8 +236,8 @@ class PenyaluranController extends Controller
             'reason' => 'required|string|max:500',
         ]);
 
-        if ($distribution->status !== 'completed') {
-            return back()->with('error', 'Hanya penyaluran completed yang bisa dibatalkan.');
+        if (!in_array($distribution->status, ['scheduled', 'on_delivery', 'completed'])) {
+            return back()->with('error', 'Penyaluran tidak bisa dibatalkan pada status ini.');
         }
 
         DB::transaction(function () use ($distribution, $request) {

@@ -37,6 +37,12 @@
         Riwayat
     </a>
 
+    <a href="{{ route('penerima.penyaluran') }}"
+        class="list-group-item list-group-item-action d-flex align-items-center {{ activeRoute('penerima.penyaluran') }}">
+        <i class="fa-solid fa-truck-fast fa-fw me-3"></i>
+        Penyaluran
+    </a>
+
     <a href="{{ route('penerima.profile') }}"
         class="list-group-item list-group-item-action d-flex align-items-center {{ activeRoute('penerima.profile') }}">
         <i class="fa-solid fa-user-gear fa-fw me-3"></i>

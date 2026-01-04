@@ -7,6 +7,7 @@ use App\Http\Controllers\Petugas\ProfileController;
 use App\Http\Controllers\Petugas\PenerimaManageController;
 use App\Http\Controllers\Petugas\DonorController;
 use App\Http\Controllers\Petugas\FoodRequestManageController;
+use App\Http\Controllers\Petugas\PenyaluranController;
 
 Route::prefix('petugas')->middleware('role:petugas')->group(function () {
     Route::get('/dashboard', [PetugasController::class, 'index'])->name('petugas.dashboard');
@@ -45,23 +46,24 @@ Route::prefix('petugas')->middleware('role:petugas')->group(function () {
     Route::delete('/profil-petugas/photo', [ProfileController::class, 'deletePhoto'])->name('petugas.profil-petugas.photo.delete');
 
 
-    Route::get('/penyaluran', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'index'])
-    ->name('petugas.data-penyaluran');
-    Route::get('/penyaluran/requests', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'requests'])
-    ->name('petugas.penyaluran.requests');
-    
-    Route::get('/penyaluran/create', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'create'])
-        ->name('petugas.penyaluran-create');
+    Route::get('/penyaluran', [PenyaluranController::class, 'index'])->name('petugas.data-penyaluran');
+    Route::get('/penyaluran/requests', [PenyaluranController::class, 'requests'])->name('petugas.penyaluran.requests');
 
-    Route::post('/penyaluran', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'store'])
-        ->name('petugas.penyaluran.store');
+    Route::get('/penyaluran/create', [PenyaluranController::class, 'create'])->name('petugas.penyaluran-create');
+    Route::post('/penyaluran', [PenyaluranController::class, 'store'])->name('petugas.penyaluran.store');
 
-    Route::get('/penyaluran/{distribution}', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'show'])
-        ->name('petugas.penyaluran.show');
+    Route::get('/penyaluran/{distribution}', [PenyaluranController::class, 'show'])->name('petugas.penyaluran.show');
 
-    Route::post('/penyaluran/{distribution}/cancel', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'cancel'])
+    // status flow
+    Route::patch('/penyaluran/{distribution}/on-delivery', [PenyaluranController::class, 'markOnDelivery'])
+        ->name('petugas.penyaluran.on_delivery');
+
+    Route::patch('/penyaluran/{distribution}/completed', [PenyaluranController::class, 'markCompleted'])
+        ->name('petugas.penyaluran.complete');
+
+    // rollback
+    Route::post('/penyaluran/{distribution}/cancel', [PenyaluranController::class, 'cancel'])
         ->name('petugas.penyaluran.cancel');
-
 
 
 

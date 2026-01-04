@@ -26,7 +26,7 @@
                 </div>
                 <div class="col-md-2 d-grid">
                     <button class="btn btn-primary rounded-pill" type="submit">
-                        <i class="fa-solid fa-magnifying-glass me-1"></i> Cari
+                        Cari
                     </button>
                 </div>
             </form>
