@@ -79,9 +79,8 @@
             </div>
         </div>
 
-        <div class="text-center text-muted small mt-3 reveal">
-            *Angka di atas bisa kamu sesuaikan (sementara buat tampilan landing page)
-        </div>
+        <div class="d-flex border border-secondary opacity-25 mt-5 w-50 mx-auto"></div>
+    </div>
     </div>
 </section>
 
