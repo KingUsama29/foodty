@@ -24,6 +24,17 @@
             default => 'fa-clock',
         };
     @endphp
+    @if (session('success'))
+        <div class="alert alert-success shadow-sm">
+            <i class="fa-solid fa-circle-check me-1"></i> {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ session('error') }}
+        </div>
+    @endif
 
     {{-- HEADER --}}
     <div class="card shadow-sm mb-4">
@@ -41,9 +52,19 @@
                 </div>
             </div>
 
-            <a href="{{ route('petugas.data-donasi') }}" class="btn btn-secondary btn-sm rounded-pill px-3">
-                <i class="fa-solid fa-arrow-left me-1"></i> Kembali
-            </a>
+            <div class="d-flex gap-2">
+                @if ($donation->status === 'accepted')
+                    <button class="btn btn-danger btn-sm rounded-pill px-3" data-bs-toggle="modal"
+                        data-bs-target="#cancelDonation">
+                        <i class="fa-solid fa-ban me-1"></i> Batalkan
+                    </button>
+                @endif
+
+                <a href="{{ route('petugas.data-donasi') }}" class="btn btn-secondary btn-sm rounded-pill px-3">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Kembali
+                </a>
+            </div>
+
         </div>
     </div>
 
@@ -210,4 +231,43 @@
             </div>
         </div>
     </div>
+
+    @if ($donation->status === 'accepted')
+        <div class="modal fade" id="cancelDonation" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4">
+                    <div class="modal-body p-4">
+                        <div class="text-center mb-3">
+                            <i class="fa-solid fa-triangle-exclamation fa-2xl text-danger mb-3"></i>
+                            <div class="fw-semibold mb-1">Batalkan donasi ini?</div>
+                            <div class="text-muted" style="font-size: 14px;">
+                                Stok gudang akan dikurangi otomatis (rollback).
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{{ route('petugas.donasi.cancel', $donation->id) }}">
+                            @csrf
+
+                            <div class="mb-3">
+                                <label class="form-label">Alasan pembatalan</label>
+                                <textarea name="reason" class="form-control" rows="3" required
+                                    placeholder="Contoh: Barang rusak / expired / salah input"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-center gap-2">
+                                <button class="btn btn-danger rounded-pill px-4">
+                                    <i class="fa-solid fa-ban me-1"></i> Ya, Batalkan
+                                </button>
+                                <button type="button" class="btn btn-secondary rounded-pill px-4"
+                                    data-bs-dismiss="modal">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection

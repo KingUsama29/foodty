@@ -119,10 +119,18 @@
                                             <i class="fa-solid fa-eye me-1"></i> Detail
                                         </a>
 
-                                        <button class="btn btn-outline-danger btn-sm rounded-pill px-3"
-                                            data-bs-toggle="modal" data-bs-target="#del{{ $d->id }}">
-                                            <i class="fa-solid fa-trash me-1"></i> Hapus
-                                        </button>
+                                        @if ($d->status === 'accepted')
+                                            <a href="{{ route('petugas.donasi.detail', $d->id) }}"
+                                                class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                                <i class="fa-solid fa-ban me-1"></i> Batalkan
+                                            </a>
+                                        @else
+                                            <button class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                                data-bs-toggle="modal" data-bs-target="#del{{ $d->id }}">
+                                                <i class="fa-solid fa-trash me-1"></i> Hapus
+                                            </button>
+                                        @endif
+
                                     </div>
 
                                     {{-- MODAL DELETE --}}

@@ -31,8 +31,11 @@ Route::prefix('petugas')->middleware('role:petugas')->group(function () {
     Route::get('/data-donasi', [DonasiController::class, 'index'])->name('petugas.data-donasi');
     Route::get('/data-donasi/create', [DonasiController::class, 'create'])->name('petugas.donasi.create');
     Route::post('/data-donasi', [DonasiController::class, 'store'])->name('petugas.donasi.store');
+    Route::get('data-donasi/item-suggest', [DonasiController::class, 'itemSuggest'])->name('petugas.donasi.item-suggest');
     Route::get('/data-donasi/{donation}', [DonasiController::class, 'show'])->name('petugas.donasi.detail');
     Route::delete('/data-donasi/{donation}', [DonasiController::class, 'destroy'])->name('petugas.donasi.destroy');
+    Route::post('/data-donasi/{donation}/cancel', [DonasiController::class, 'cancel'])->name('petugas.donasi.cancel');
+
 
     Route::get('/petugas/pengajuan', [FoodRequestManageController::class, 'index'])->name('petugas.data-pengajuan');
     Route::get('/petugas/pengajuan/{foodRequest}', [FoodRequestManageController::class, 'show'])->name('petugas.pengajuan.detail');
