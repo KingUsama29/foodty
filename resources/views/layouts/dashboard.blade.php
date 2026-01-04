@@ -30,17 +30,21 @@
 
             {{-- ================= SIDEBAR (DESKTOP ONLY) ================= --}}
             <aside class="col-lg-3 col-xl-2 d-none d-lg-flex flex-column p-0 bg-white border-end"
-                style="height: 100vh; position: fixed;">
-                @include('partials.sidebarDashboard')
+                style="position: fixed; top:56px; left:0; height: calc(100vh - 56px);">
+
+                <div class="sidebar-scroll" style="height:100%; overflow-y:auto; overflow-x:hidden;">
+                    @include('partials.sidebarDashboard')
+                </div>
             </aside>
+
 
             {{-- ================= MAIN CONTENT ================= --}}
             <main class="col-12 col-lg-9 col-xl-10 ms-auto p-3"
                 style="
-        height: calc(100vh - 56px);
-        overflow-y: auto;
-        margin-top: 56px;
-    ">
+                    height: calc(100vh - 56px);
+                    overflow-y: auto;
+                    margin-top: 56px;
+                ">
                 <div class="dashboard-content">
                     @yield('content')
                 </div>
