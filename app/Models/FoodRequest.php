@@ -28,7 +28,14 @@ class FoodRequest extends Model
         'review_notes',
         'reviewed_at',
     ];
+    
     public function user(){
         return $this->belongsTo(User::class);
     }   
+
+    public function distributions()
+    {
+        return $this->hasMany(\App\Models\Distribution::class);
+    }
+
 }

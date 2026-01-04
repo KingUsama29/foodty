@@ -44,4 +44,25 @@ Route::prefix('petugas')->middleware('role:petugas')->group(function () {
     Route::patch('/profil-petugas', [ProfileController::class, 'update'])->name('petugas.profil-petugas.update');
     Route::delete('/profil-petugas/photo', [ProfileController::class, 'deletePhoto'])->name('petugas.profil-petugas.photo.delete');
 
+
+    Route::get('/penyaluran', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'index'])
+    ->name('petugas.data-penyaluran');
+    Route::get('/penyaluran/requests', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'requests'])
+    ->name('petugas.penyaluran.requests');
+    
+    Route::get('/penyaluran/create', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'create'])
+        ->name('petugas.penyaluran-create');
+
+    Route::post('/penyaluran', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'store'])
+        ->name('petugas.penyaluran.store');
+
+    Route::get('/penyaluran/{distribution}', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'show'])
+        ->name('petugas.penyaluran.show');
+
+    Route::post('/penyaluran/{distribution}/cancel', [\App\Http\Controllers\Petugas\PenyaluranController::class, 'cancel'])
+        ->name('petugas.penyaluran.cancel');
+
+
+
+
 });

@@ -16,4 +16,16 @@ class WarehouseStock extends Model
         'qty' => 'decimal:2',
         'expired_at' => 'date',
     ];
+
+
+    public function warehouseItem()
+    {
+        return $this->belongsTo(WarehouseItem::class, 'warehouse_item_id');
+    }
+
+    // opsional (kalau kamu butuh)
+    public function cabang()
+    {
+        return $this->belongsTo(Cabang::class, 'cabang_id');
+    }
 }
