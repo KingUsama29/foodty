@@ -1,6 +1,7 @@
 body {
     font-family: 'Poppins', sans-serif;
 }
+
 .auth-wrapper {
     min-height: 100vh;
     background: url('/public/gambar/background_login.png') center / cover no-repeat;
@@ -9,15 +10,18 @@ body {
     justify-content: center;
     padding: 1.5rem;
 }
+
 .auth-card {
     max-width: 420px;
     width: 100%;
     border-radius: 1.5rem;
-    box-shadow: 0 15px 35px rgba(0,0,0,.12);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, .12);
 }
+
 .auth-logo {
     width: 90px;
 }
+
 .btn-primary {
     background-color: #4fa3d1;
     border: none;
@@ -26,6 +30,7 @@ body {
 .btn-primary:hover {
     background-color: #3b8bb7;
 }
+
 .form-control {
     font-size: 14px;
     padding: 10px 12px;
