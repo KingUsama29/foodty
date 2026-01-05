@@ -57,14 +57,31 @@ dalam satu sistem terintegrasi.
 1. Clone repository
    ```bash
    git clone https://github.com/KingUsama29/foodty.git
-2. cd foodty
-3. composer install
-4. cp .env.example .env
-5. DB_DATABASE=foodty
+   ```
+2.  ```bash
+    cd foodty
+    ```
+3. ```bash
+    composer install
+    ```
+4. ```bash
+    cp .env.example .env
+    ```
+5. ```bash
+   DB_DATABASE=foodty
    DB_USERNAME=root
    DB_PASSWORD=
-6. php artisan key:generate
-7. php artisan migrate --seed
-8. php artisan storage:link
-9. php artisan serve
+   ```
+6.  ```bash
+    php artisan key:generate
+    ```
+7. ```bash
+    php artisan migrate --seed
+    ```
+8. ```bash
+    php artisan storage:link
+    ```
+9. ```bash
+    php artisan serve
+    ```
 
