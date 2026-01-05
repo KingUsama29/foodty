@@ -2,17 +2,18 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\AdminController as AdminDashboardController;
 use App\Http\Controllers\Admin\PetugasController as AdminPetugasController;
 use App\Http\Controllers\Admin\CabangController as AdminCabangController;
 use App\Http\Controllers\Admin\FoodRequestApprovalController;
 use App\Http\Controllers\Admin\StockController as AdminStockController;
 use App\Http\Controllers\Admin\PenyaluranController as AdminPenyaluranController;
 
+
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     // ================= DASHBOARD =================
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
     // ================= PENGAJUAN (DINAMIS - FOOD REQUESTS) =================
     // Halaman yang kamu buka di sidebar: admin.pengajuan
@@ -73,30 +74,5 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/penyaluran', [AdminPenyaluranController::class, 'index'])->name('admin.penyaluran');
     Route::get('/penyaluran/{id}', [AdminPenyaluranController::class, 'show'])->whereNumber('id')->name('admin.penyaluran.detail');
-    // ================= STOK (VIEW STATIS) =================
-    // Route::get('/stok', function () {
-    //     return view('admin.stok-barang');
-    // })->name('admin.stok');
 
-    // Route::get('/stok/{daerah}', function ($daerah) {
-    //     return view('admin.stok-barang-detail', compact('daerah'));
-    // })->name('admin.stok.detail');
-
-
-    // ================= PENYALURAN (VIEW STATIS) =================
-    // Route::get('/penyaluran', function () {
-    //     return view('admin.penyaluran');
-    // })->name('admin.penyaluran');
-
-    // Route::get('/penyaluran/form/{daerah}', function ($daerah) {
-    //     return view('admin.penyaluran-form', compact('daerah'));
-    // })->name('admin.penyaluran.form');
-
-    // Route::get('/penyaluran/ringkasan', function () {
-    //     return view('admin.penyaluran-ringkasan');
-    // })->name('admin.penyaluran.ringkasan');
-
-    // Route::get('/penyaluran/riwayat', function () {
-    //     return view('admin.penyaluran-riwayat');
-    // })->name('admin.penyaluran.riwayat');
 });
