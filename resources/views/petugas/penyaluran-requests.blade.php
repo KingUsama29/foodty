@@ -40,7 +40,7 @@
                     <thead class="table-light">
                         <tr>
                             <th style="width:90px;">ID</th>
-                            <th style="min-width:280px;">Penerima</th>
+                            <th style="min-width:280px;">Pemohon</th>
                             <th style="width:160px;">Kategori</th>
                             <th style="width:160px;">Menunggu</th>
                             <th style="min-width:240px;">Kebutuhan & Alasan</th>

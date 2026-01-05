@@ -110,7 +110,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <div class="text-muted small mb-1">Penerima</div>
+                            <div class="text-muted small mb-1">Pemohon</div>
                             <div class="fw-semibold">
                                 <i class="fa-solid fa-user-check me-1 text-primary"></i>
                                 {{ $row->nama_penerima ?? '-' }}

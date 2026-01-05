@@ -115,7 +115,7 @@
                             <th style="min-width:140px;">Waktu</th>
                             <th>Cabang</th>
                             <th>Petugas</th>
-                            <th>Penerima</th>
+                            <th>Pemohon</th>
                             <th>Barang</th>
                             <th class="text-end">Qty</th>
                             <th>Expired</th>
