@@ -1,7 +1,7 @@
 <aside class="sidebar d-none d-lg-flex flex-column border-end">
 
     {{-- PROFILE --}}
-    <div class="p-3 border-bottom text-center" style="margin-top: 70px;">
+    <div class="p-3 border-bottom text-center" style="margin-top: 30px;">
         @php
             $user = auth()->user();
 
