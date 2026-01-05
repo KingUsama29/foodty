@@ -30,7 +30,7 @@
             <div>
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <h5 class="mb-0 fw-bold">
-                        <i class="fa-solid fa-receipt me-2 text-white"></i>
+                        <i class="fa-solid fa-receipt me-2 text-dark"></i>
                         Detail Penyaluran #{{ $distribution->id }}
                     </h5>
 
@@ -42,7 +42,7 @@
 
                 <div class="text-muted small mt-2">
                     <span class="me-2">
-                        <i class="fa-solid fa-building-flag me-1 text-white"></i>
+                        <i class="fa-solid fa-building-flag me-1 text-dark"></i>
                         Cabang: <b>{{ $cabangName }}</b>
                     </span>
                     <span class="me-2">
@@ -58,19 +58,19 @@
                 {{-- timeline mini --}}
                 <div class="mt-3 d-flex flex-wrap gap-2">
                     <span class="badge text-bg-light border rounded-pill px-3 py-2">
-                        <i class="fa-solid fa-calendar-day me-1 text-white"></i>
+                        <i class="fa-solid fa-calendar-day me-1 text-dark"></i>
                         Jadwal Pengantaran:
                         <b>{{ $scheduledAt ? $scheduledAt->format('d M Y • H:i') : '-' }}</b>
                     </span>
 
                     <span class="badge text-bg-light border rounded-pill px-3 py-2">
-                        <i class="fa-solid fa-flag-checkered me-1 text-white"></i>
+                        <i class="fa-solid fa-flag-checkered me-1 text-dark"></i>
                         Selesai Dicatat:
                         <b>{{ $distributedAt ? $distributedAt->format('d M Y • H:i') : '-' }}</b>
                     </span>
 
                     <span class="badge text-bg-light border rounded-pill px-3 py-2">
-                        <i class="fa-solid fa-diagram-project me-1 text-white"></i>
+                        <i class="fa-solid fa-diagram-project me-1 text-dark"></i>
                         Alur: <b>Dijadwalkan → Dalam Pengantaran → Sudah Disalurkan</b>
                     </span>
                 </div>
@@ -100,7 +100,7 @@
     <div class="card shadow-sm mb-4">
         <div class="card-body d-flex flex-wrap gap-2 align-items-center justify-content-between">
             <div class="fw-semibold">
-                <i class="fa-solid fa-gears me-2 text-white"></i>
+                <i class="fa-solid fa-gears me-2 text-dark"></i>
                 Aksi Penyaluran
             </div>
 
@@ -179,7 +179,7 @@
         <div class="col-lg-6">
             <div class="card shadow-sm h-100">
                 <div class="card-header bg-white fw-semibold">
-                    <i class="fa-solid fa-user me-2 text-white"></i> Data Penerima
+                    <i class="fa-solid fa-user me-2 text-dark"></i> Data Pemohon
                 </div>
                 <div class="card-body">
                     <div class="mb-2">
@@ -233,7 +233,7 @@
     <div class="card shadow-sm">
         <div class="card-header bg-white fw-semibold d-flex align-items-center justify-content-between">
             <div>
-                <i class="fa-solid fa-boxes-stacked me-2 text-white"></i> Barang yang Disalurkan
+                <i class="fa-solid fa-boxes-stacked me-2 text-dark"></i> Barang yang Disalurkan
             </div>
             <span class="badge text-bg-light border">
                 {{ $distribution->items->count() }} item

@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <a href="{{ route('petugas.data-penyaluran') }}" class="btn btn-secondary btn-sm rounded-pill px-3">
+            <a href="{{ url()->previous() }}" class="btn btn-secondary btn-sm rounded-pill px-3">
                 <i class="fa-solid fa-arrow-left me-1"></i> Kembali
             </a>
         </div>

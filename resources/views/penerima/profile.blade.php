@@ -128,12 +128,12 @@
                                 <div class="fw-semibold text-end">{{ $user->no_telp ?? '-' }}</div>
                             </div>
 
-                            <div>
+                            {{-- <div>
                                 <div class="text-muted mb-1" style="font-size: 13px;">
                                     <i class="fa-solid fa-location-dot me-1"></i> Alamat Akun
                                 </div>
                                 <div class="fw-semibold">{{ $user->alamat ?? '-' }}</div>
-                            </div>
+                            </div> --}}
 
                             <div class="text-muted" style="font-size: 12px;">
                                 <i class="fa-regular fa-calendar me-1"></i>

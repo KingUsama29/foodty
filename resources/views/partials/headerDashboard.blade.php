@@ -38,11 +38,14 @@
         </div>
 
         {{-- Logout --}}
-        <div class="mt-3">
-            <button class="btn btn-outline-danger w-100">
-                <i class="fa-solid fa-right-from-bracket me-2"></i>
-                Logout
-            </button>
+        <div class="p-3 border-top">
+            <form action="{{ route('logout') }}" method="post">
+                @csrf
+                <button type="submit" class="btn btn-outline-danger w-100">
+                    <i class="fa-solid fa-right-from-bracket me-2"></i>
+                    Logout
+                </button>
+            </form>
         </div>
 
     </div>

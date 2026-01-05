@@ -40,7 +40,7 @@
                     <thead class="table-light">
                         <tr>
                             <th>ID</th>
-                            <th>Penerima</th>
+                            <th>Pemohon</th>
                             <th>Request</th>
                             <th>Status</th>
                             <th>Waktu</th>

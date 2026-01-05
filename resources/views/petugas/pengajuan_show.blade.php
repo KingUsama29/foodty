@@ -38,7 +38,7 @@
                 </span>
                 <div>
                     <h5 class="mb-1">Detail Pengajuan Bantuan</h5>
-                    <small class="text-muted">Periksa data pengajuan penerima</small>
+                    <small class="text-muted">Periksa data pengajuan Pemohon</small>
                 </div>
             </div>
 
@@ -71,7 +71,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="fw-semibold">
-                            <i class="fa-solid fa-user me-2 text-muted"></i> Data Penerima
+                            <i class="fa-solid fa-user me-2 text-muted"></i> Data Pemohon
                         </div>
                         <span class="badge text-bg-light border rounded-pill px-3 py-2">
                             <i class="fa-solid fa-user-check me-1 text-muted"></i>
