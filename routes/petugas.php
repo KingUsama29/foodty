@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PetugasController;
+use App\Http\Controllers\Petugas\PetugasController;
 use App\Http\Controllers\Petugas\DonasiController;
 use App\Http\Controllers\Petugas\ProfileController;
 use App\Http\Controllers\Petugas\PenerimaManageController;
 use App\Http\Controllers\Petugas\DonorController;
 use App\Http\Controllers\Petugas\FoodRequestManageController;
 use App\Http\Controllers\Petugas\PenyaluranController;
+
 
 Route::prefix('petugas')->middleware('role:petugas')->group(function () {
     Route::get('/dashboard', [PetugasController::class, 'index'])->name('petugas.dashboard');
